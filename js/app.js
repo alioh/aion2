@@ -156,6 +156,11 @@
       ...task.links.map((l) => h('a', { class: 'linkchip', href: l.url, target: '_blank', rel: 'noopener noreferrer' },
         /youtu/.test(l.url) ? '▶ ' : '🔗 ', l.label)));
 
+    const layer = task.mapLayer && M_.byId[task.mapLayer];
+    const mapBtn = layer && h('button', { class: 'btn', type: 'button', title: 'Show on the interactive map',
+      onclick: () => { setView('map'); $('mapFaction').value = state.ui.mapFaction; openLayer(layer, state.ui.mapFaction); window.scrollTo(0, 0); } },
+      '\uD83D\uDDFA ' + layer.label.replace(/ \(.*\)$/, ''));
+
     const tools = manage && h('div', { class: 'tools' },
       h('button', { class: 'btn sm', type: 'button', disabled: pos === 0, 'aria-label': 'Move up', onclick: () => move(task, -1) }, '↑'),
       h('button', { class: 'btn sm', type: 'button', disabled: pos === sameType.length - 1, 'aria-label': 'Move down', onclick: () => move(task, 1) }, '↓'),
@@ -170,7 +175,7 @@
         badges,
         task.description && h('p', { class: 'desc' }, task.description),
         loc,
-        h('div', { class: 'row-actions' }, guide, tools),
+        h('div', { class: 'row-actions' }, guide, mapBtn, tools),
         extra,
         stepsSection(task),
         videoSection(task)));
@@ -287,6 +292,7 @@
     f.elements.videos.value = S.linksToText(t.videos);
     f.elements.steps.value = (t.steps || []).join('\n');
     f.elements.scope.value = t.scope || 'character';
+    f.elements.mapLayer.value = t.mapLayer || '';
     f.elements.verified.checked = !!t.verified;
     $('taskDlg').showModal();
   }
@@ -299,7 +305,7 @@
     const data = {
       title: f.title.value, description: f.description.value, location: f.location.value, guideUrl: url,
       category: f.category.value, resetType: f.resetType.value, source: f.source.value, verified: f.verified.checked, links: S.parseLinks(f.links.value),
-      videos: S.parseLinks(f.videos.value), steps: f.steps.value.split(/\r?\n/), scope: f.scope.value,
+      videos: S.parseLinks(f.videos.value), steps: f.steps.value.split(/\r?\n/), scope: f.scope.value, mapLayer: f.mapLayer.value,
     };
     if (editing) Object.assign(editing, S.cleanTask({ ...editing, ...data }));
     else state.tasks.push(S.cleanTask({ ...data, id: S.uid('c'), custom: true }, true));
@@ -434,6 +440,7 @@
 
   // ---------- map view ----------
   // Third-party maps shown in a frame (not copied). embed:false = the site refuses to be framed.
+  const M_ = window.AionMaps;
   const MAPS = [
     { label: 'interactivemap.app: Verteron (Elyos)', url: 'https://interactivemap.app/aion2/maps/verteron', embed: true },
     { label: 'interactivemap.app: Altgard (Asmodian)', url: 'https://interactivemap.app/aion2/maps/altgard', embed: true },
@@ -443,8 +450,10 @@
     { label: 'aion2hub maps (opens in a tab)', url: 'https://aion2hub.com/maps', embed: false },
   ];
   let mapBuilt = false;
-  function showMap() {
-    const m = MAPS[+$('mapSel').value] || MAPS[0];
+  let currentMap = MAPS[0];
+
+  function loadMap(m) {
+    currentMap = m;
     $('mapOpen').href = m.url;
     const wrap = $('mapFrameWrap');
     if (!m.embed) {
@@ -452,9 +461,46 @@
       wrap.replaceChildren();
       return;
     }
-    $('mapNote').textContent = 'If the map stays blank, the site may be blocking embedding: use "Open in new tab".';
+    $('mapNote').textContent = m.note || 'If the map stays blank, the site may be blocking embedding: use "Open in new tab".';
     wrap.replaceChildren(h('iframe', { src: m.url, title: m.label, loading: 'lazy', referrerpolicy: 'no-referrer',
       sandbox: 'allow-scripts allow-same-origin allow-popups allow-forms' }));
+  }
+  function showMap() { loadMap(MAPS[+$('mapSel').value] || MAPS[0]); }
+
+  /** Show one interactivemap.app layer for a faction. Falls back to the faction's base map if the layer is missing there. */
+  function openLayer(layer, faction) {
+    const url = M_.layerUrl(layer, faction);
+    const other = Object.keys(layer.slugs).map((f) => M_.FACTIONS[f]).join(' / ');
+    const m = url
+      ? { label: layer.label + ' - ' + M_.FACTIONS[faction], url, embed: true,
+          note: 'Showing: ' + layer.label + ' on ' + M_.FACTIONS[faction] + '. Use the map\'s own sidebar to toggle other layers.' }
+      : { label: layer.label, url: M_.baseUrl(faction), embed: true,
+          note: layer.label + ' has no layer on ' + M_.FACTIONS[faction] + ' (only on ' + other + '). Showing the base map: use its sidebar to look for it.' };
+    let opt = [...$('mapSel').options].find((o) => o.value === 'found');
+    if (!opt) { opt = h('option', { value: 'found' }); $('mapSel').append(opt); }
+    opt.textContent = 'Search: ' + m.label;
+    $('mapSel').value = 'found';
+    loadMap(m);
+  }
+
+  function renderMapResults() {
+    const q = $('mapQ').value;
+    const box = $('mapResults');
+    const faction = $('mapFaction').value;
+    const hits = M_.search(q);
+    if (!q.trim()) { box.replaceChildren(); return; }
+    if (!hits.length) {
+      box.replaceChildren(h('span', { class: 'note' }, 'No layer matches "' + q.trim() + '". Try the other maps in the list above, or the site\'s own search.'));
+      return;
+    }
+    box.replaceChildren(...hits.map((l) => {
+      const ok = !!M_.layerUrl(l, faction);
+      return h('button', { class: 'chip pick' + (ok ? '' : ' other'), type: 'button',
+        title: ok ? 'Show on the map' : 'Not on this faction map: opens the base map',
+        onclick: () => openLayer(l, faction) },
+        l.label, ok ? '' : ' (' + Object.keys(l.slugs).map((f) => M_.FACTIONS[f].split(' ')[0]).join('/') + ' only)');
+    }));
+    if (hits.length === 1) openLayer(hits[0], faction);
   }
   function setView(v) {
     const map = v === 'map';
@@ -465,14 +511,18 @@
     if (map && !mapBuilt) {
       mapBuilt = true;
       $('mapSel').replaceChildren(...MAPS.map((m, i) => h('option', { value: i }, m.label)));
+      $('mapFaction').value = state.ui.mapFaction;
       showMap();
     }
   }
   $('tabTracker').addEventListener('click', () => setView('tracker'));
   $('tabMap').addEventListener('click', () => setView('map'));
   $('mapSel').addEventListener('change', showMap);
+  $('mapQ').addEventListener('input', renderMapResults);
+  $('mapFaction').addEventListener('change', () => { state.ui.mapFaction = $('mapFaction').value; save(); renderMapResults(); render(); });
 
   // ---------- wiring ----------
+  $('mapLayerSel').replaceChildren(h('option', { value: '' }, 'None'), ...M_.LAYERS.map((l) => h('option', { value: l.id }, l.label)));
   document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => b.closest('dialog').close()));
   $('addTask').addEventListener('click', () => openTask(null));
   $('search').addEventListener('input', renderList);

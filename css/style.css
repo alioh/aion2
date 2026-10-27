@@ -153,3 +153,11 @@ code { background: var(--surface2); padding: 0 4px; border-radius: 4px; }
 .topbar { gap: 8px; flex-wrap: wrap; }
 [hidden] { display: none !important; }
 @media (max-width: 520px) { .topbar h1 span { display: none; } }
+
+.mapsearch { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.mapsearch input { flex: 2 1 220px; min-width: 0; }
+.mapsearch select { flex: 1 1 160px; min-width: 0; }
+#mapResults { margin-top: 8px; }
+.chip.pick { cursor: pointer; color: var(--text); font: inherit; font-size: .85rem; }
+.chip.pick:hover { border-color: var(--accent); }
+.chip.pick.other { opacity: .7; }

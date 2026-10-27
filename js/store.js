@@ -86,6 +86,7 @@
       verified: t.verified === true,
       source: str(t.source, 300),
       scope: SCOPES.includes(t.scope) ? t.scope : 'character',
+      mapLayer: str(t.mapLayer, 60).replace(/[^a-z0-9-]/g, ''),
       steps: cleanSteps(t.steps),
       links: cleanLinks(t.links),
       videos: cleanLinks(t.videos),
@@ -108,7 +109,7 @@
       seedRev: 0,
       completions: {},
       resources: cleanLinks(resources, 200),
-      ui: { category: 'all', status: 'all', hideCompleted: false },
+      ui: { category: 'all', status: 'all', hideCompleted: false, mapFaction: 'verteron' },
     };
   }
 
@@ -155,6 +156,7 @@
           if (!Array.isArray(t.links)) ct.links = cleanLinks(sd.links);
           if (!Array.isArray(t.videos)) ct.videos = cleanLinks(sd.videos);
           if (!Array.isArray(t.steps)) ct.steps = cleanSteps(sd.steps);
+          if (typeof t.mapLayer !== 'string') ct.mapLayer = str(sd.mapLayer, 60);
           if (!SCOPES.includes(t.scope)) ct.scope = SCOPES.includes(sd.scope) ? sd.scope : 'character';
         }
       }
@@ -181,6 +183,7 @@
       category: str(ru.category, 60) || 'all',
       status: ['all', 'todo', 'done'].includes(ru.status) ? ru.status : 'all',
       hideCompleted: ru.hideCompleted === true,
+      mapFaction: ru.mapFaction === 'altgard' ? 'altgard' : 'verteron',
     };
     const activeCharId = characters.some((c) => c.id === raw.activeCharId) ? raw.activeCharId : characters[0].id;
     const seedRev = Number.isInteger(raw.seedRev) ? raw.seedRev : 0;

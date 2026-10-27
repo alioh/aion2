@@ -80,6 +80,14 @@
         <select id="mapSel"></select>
         <a id="mapOpen" class="btn" target="_blank" rel="noopener noreferrer">Open in new tab &#8599;</a>
       </div>
+      <div class="mapsearch">
+        <input id="mapQ" type="search" placeholder="Find on map: gems, stronghold, hidden cube, ore, crafting..." aria-label="Find something on the map">
+        <select id="mapFaction" aria-label="Faction map">
+          <option value="verteron">Verteron (Elyos)</option>
+          <option value="altgard">Altgard (Asmodian)</option>
+        </select>
+      </div>
+      <div id="mapResults" class="chips" aria-live="polite"></div>
       <p id="mapNote" class="note"></p>
     </section>
     <div id="mapFrameWrap" class="mapframe"></div>
@@ -99,6 +107,9 @@
           <select name="resetType"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="once">One-time</option></select>
         </label>
       </div>
+      <label>Map layer (adds a "Map" button to the task)
+        <select name="mapLayer" id="mapLayerSel"></select>
+      </label>
       <label>Limit is
         <select name="scope"><option value="character">Per character</option><option value="server">Per server (shared by all characters)</option></select>
       </label>
@@ -175,6 +186,7 @@
   <script src="js/seed.js"></script>
   <script src="js/time.js"></script>
   <script src="js/store.js"></script>
+  <script src="js/maps.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

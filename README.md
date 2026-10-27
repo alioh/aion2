@@ -35,7 +35,7 @@ You can choose any timezone in **Settings**: enter the same moment in it (for ex
 - **One-time progression** tasks (Strongholds, Monolith, Crafting, Gathering) never reset and have a **How to complete** step list.
 - **Guides:** each task has a primary **Guide** button, extra guide links, and **Video guides**. YouTube links are embedded (open the "Video guides" section; swipe or use the arrows to move between videos; they load only when opened). Add them in **Manage tasks → Edit**, one per line as `Label | URL` or just a URL.
 - **📚 Resources** is an editable library of databases, maps, timers and guides, saved and included in exports.
-- **Map tab:** shows third-party interactive maps (interactivemap.app, QuestLog, aion2t.com) in a frame. aion2maps.com and aion2hub forbid framing, so they open in a new tab. Nothing is copied from those sites.
+- **Map tab:** shows third-party interactive maps in a frame (interactivemap.app, QuestLog, aion2t.com); aion2maps.com and aion2hub forbid framing, so they open in a new tab. Nothing is copied from those sites. **Find on map** searches a built-in index of interactivemap.app layers (for example "gems" gives Diamond, Sapphire and Ruby Gemstone) and loads the matching layer; switch between the Verteron (Elyos) and Altgard (Asmodian) maps. Some layers exist on one map only, and the app says so. Tasks with a map location (Strongholds, Monolith, Crafting, Gathering, Substance Morph, dungeons) have a **Map** button that opens the right layer; set it for any task under Manage tasks → Edit → Map layer.
 - Only http(s) links are accepted.
 
 ## How resets work
@@ -65,6 +65,7 @@ css/style.css     mobile-first styles, dark default, light theme
 js/seed.js        default tasks (edit me)
 js/time.js        reset-period maths
 js/store.js       state shape, validation, import sanitising
+js/maps.js        interactive-map layer index and search
 js/app.js         UI
 tests/            Node tests
 ```

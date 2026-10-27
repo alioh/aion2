@@ -28,3 +28,8 @@ Duty Missions (per server), Nightmare, Odyle Energy, Shugo Festival keys (3/day)
 - Videos: YouTube ids were taken from the source lists on aion2maps.com and matched to their titles; they were not watched. Some are non-English (marked in the title).
 - Monolith and Stronghold have no daily/weekly routine, so they are one-time progression tasks. The Rift of Time and Space Stronghold contest (level 50, item level 4,500, weekly event key, Korean patch note) is an event, not tracked.
 - Locations: Daeva Pass has none confirmed.
+
+## Third pass
+- Growth dungeons: confirmed by the owner and metabot.gg's dungeon guide (level 45, 7 hours each per week, only while inside). aion2.gg returned 403, so it is linked, not read.
+- Daeva Pass: per-character, free and premium tracks, Shop Coins (owner, aion2maps). The weekly EXP limit (50,000) is still metabot.gg only and is flagged in the task text.
+- Map layers: every layer in js/maps.js was probed on interactivemap.app and kept only if its page title listed a marker count. There is no Monolith layer slug (only Empyrean Traces), no Empyrean/Dungeon layer on Altgard, and no Lower Reshanta map, so those fall back to the base map.

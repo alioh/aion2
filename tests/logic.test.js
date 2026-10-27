@@ -4,6 +4,7 @@ const assert = require('node:assert');
 const T = require('../js/time.js');
 const S = require('../js/store.js');
 const SEED = require('../js/seed.js');
+const MAPS = require('../js/maps.js');
 
 const utc = (s) => Date.parse(s);
 const base = { resetTime: '07:00', timezone: 'UTC', weeklyDay: 3 }; // Wednesday
@@ -147,4 +148,20 @@ test('syncSeed: refreshes defaults, adds new, drops retired, keeps custom/hidden
   assert.equal(st.tasks.find((t) => t.id === 'nightmare').hidden, true);
   assert.notEqual(st.tasks.find((t) => t.id === 'duty-missions').description, 'edited');
   assert.equal(st.seedRev, SEED.REV);
+});
+
+test('map search: "gems" finds the gemstone layers; plurals and misses behave', () => {
+  assert.deepStrictEqual(MAPS.search('gems').map((l) => l.id), ['diamond-gemstone', 'sapphire-gemstone', 'ruby-gemstone']);
+  assert.ok(MAPS.search('monolith').some((l) => l.id === 'empyrean-trace'));
+  assert.ok(MAPS.search('hidden cubes').some((l) => l.id === 'hidden-cube'));
+  assert.deepStrictEqual(MAPS.search('zzzz'), []);
+  assert.deepStrictEqual(MAPS.search('  '), []);
+});
+
+test('map urls: faction-aware, missing layers return null, seed map layers exist', () => {
+  const g = MAPS.byId['diamond-gemstone'];
+  assert.equal(MAPS.layerUrl(g, 'altgard'), 'https://interactivemap.app/aion2/maps/altgard/diamond-gemstone');
+  assert.equal(MAPS.layerUrl(MAPS.byId['yggdrasil-log'], 'altgard'), null);
+  assert.equal(MAPS.layerUrl(MAPS.byId['blacksmithing'], 'altgard'), 'https://interactivemap.app/aion2/maps/altgard/svc-blacksmithing-altgard');
+  for (const t of SEED) if (t.mapLayer) assert.ok(MAPS.byId[t.mapLayer], t.id);
 });

@@ -15,7 +15,7 @@
   const H = 'https://aion2hub.com/database/';
   const yt = (id, label) => ({ label, url: 'https://www.youtube.com/watch?v=' + id });
 
-  const SEED_REV = 2;
+  const SEED_REV = 3;
 
   const SEED_TASKS = [
     // ---- Daily ----
@@ -32,7 +32,7 @@
       location: 'Nightmare boss ladder (starts at Gatekeeper Pinopi, tier 1)', guideUrl: A + 'nightmare/', source: 'A, M, MM',
       links: [{ label: 'aion2hub Nightmare database', url: H + 'nightmare' }, { label: 'metabot.gg bosses', url: M + 'bosses' }],
       videos: [yt('DOkdiksIxB4', 'BoredAF: Complete Nightmare Boss Guide, Season 1')] },
-    { id: 'odyle-energy', title: 'Spend Odyle Energy', category: 'Dungeons', resetType: 'daily', scope: 'character', verified: true,
+    { id: 'odyle-energy', mapLayer: 'dungeon', title: 'Spend Odyle Energy', category: 'Dungeons', resetType: 'daily', scope: 'character', verified: true,
       description: 'Odyle Energy refills 15 every 3 hours (120/day) per character and stops at the cap (560, or 840 with membership), so spend it. Energy pays for the reward cube, not entry: 40 per claim (20 in Krao Cave/Urugugu Canyon Exploration, 30 in Fire Temple Exploration).',
       location: 'Expedition / Conquest dungeons, e.g. Draupnir or Ferocious Horn Den', guideUrl: A + 'expeditions-and-odyle/', source: 'A, M, MM',
       links: [{ label: 'aion2hub: Draupnir', url: H + 'instance/draupnir' }, { label: 'aion2hub: Ferocious Horn Den', url: H + 'instance/ferocious-horn-den' }],
@@ -54,7 +54,7 @@
       description: 'Solo entries, 3 per week per character, from item level 1,000. Difficulties open at item level 1,000 / 1,500 / 2,000 / 2,500; entering on the last day before the reset puts you in the highest difficulty your item level reached that week.',
       location: 'Nightmare Altar and its sister dungeons', guideUrl: M + 'dungeons/nightmare-altar', source: 'A, M, MM',
       links: [{ label: 'MeinMMO checklist', url: MM }], videos: [] },
-    { id: 'exploration', title: 'Exploration (Expedition dungeons)', category: 'Dungeons', resetType: 'weekly', scope: 'character', verified: true,
+    { id: 'exploration', mapLayer: 'dungeon', title: 'Exploration (Expedition dungeons)', category: 'Dungeons', resetType: 'weekly', scope: 'character', verified: true,
       description: 'Run Expedition dungeons in Exploration mode for reward counts: 7 per dungeon per week, no carry-over. Krao Cave and Urugugu Canyon claims cost 20 Odyle Energy each.',
       location: 'Expedition dungeons, e.g. Krao Cave, Urugugu Canyon', guideUrl: M + 'dungeons/krao-cave', source: 'M, K',
       links: [{ label: 'aion2hub: Krao Cave', url: H + 'instance/krao-cave' }, { label: 'aion2hub: Urugugu Canyon', url: H + 'instance/urugugu-canyon' }], videos: [] },
@@ -72,21 +72,23 @@
       description: 'Weekly time allowance in the Abyss: 7 hours, resetting Wednesday with no carry-over. Global opens with Lower Reshanta only. One source says members get 14 hours; another says membership gives no extra Abyss time, so check in game.',
       location: 'Lower Reshanta (Abyss)', guideUrl: A + 'abyss/', source: 'A, M (membership bonus disputed)',
       links: [{ label: 'metabot.gg: Chaotic Lower Reshanta', url: M + 'map/chaotic-lower-reshanta' }], videos: [] },
-    { id: 'growth-dungeons', title: 'Growth dungeons', category: 'Dungeons', resetType: 'weekly', scope: 'character', verified: false,
-      description: 'Weekly time allowance of 7 hours each in Silent Graveyard and Fafnite Amphitheater; time only counts while inside. Only metabot.gg lists this and aion2maps does not mention it, so confirm it in game.',
-      location: 'Silent Graveyard, Fafnite Amphitheater', guideUrl: M + 'dungeons/silent-graveyard', source: 'M only', links: [], videos: [] },
-    { id: 'daeva-pass', title: 'Daeva Pass weekly EXP', category: 'Events', resetType: 'weekly', scope: 'character', verified: false,
-      description: 'The Daeva Pass is bought and progressed per character. Reach the weekly pass EXP limit (50,000 on the Season 1 pass per metabot.gg; Season 1 runs 30 Sep to 16 Dec 2026). Spend Daeva Pass Shop Coins before the season ends.',
-      location: '', guideUrl: M + 'daeva-pass', source: 'M (limit); A (per character, season dates)', links: [{ label: 'aion2maps: What\'s tied to character/server/account', url: A + 'whats-bound/' }], videos: [] },
+    { id: 'growth-dungeons', title: 'Growth dungeons', category: 'Dungeons', resetType: 'weekly', scope: 'character', verified: true,
+      description: 'Timed zones rather than runs: Silent Graveyard and Fafnite Amphitheater both need level 45 and give 7 hours of usage time each per week (reset Wednesday), deducted only while you are inside. Loot includes a Soul Crystal, Enhance Stones and the Shulak Loot Bundle, so they suit alts and crafters more than mains.',
+      location: 'Silent Graveyard, Fafnite Amphitheater', guideUrl: M + 'guides/dungeon-guide', source: 'U, M dungeon guide, aion2.gg database',
+      links: [{ label: 'aion2.gg: Growth dungeons database', url: 'https://aion2.gg/database/dungeons?type=Growth' }, { label: 'metabot.gg: Silent Graveyard', url: M + 'dungeons/silent-graveyard' }, { label: 'metabot.gg: Fafnite Amphitheater', url: M + 'dungeons/fafnite-amphitheater' }], videos: [] },
+    { id: 'daeva-pass', title: 'Daeva Pass weekly EXP', category: 'Events', resetType: 'weekly', scope: 'character', verified: true,
+      description: 'The Daeva Pass is a seasonal battle pass with a free and a premium track, tracked per character (not account-wide). Levelling it pays currency, gear-enhancement materials and Daeva Pass Shop Coins (spend them before the season ends). Season 1 runs 30 Sep to 16 Dec 2026. metabot.gg lists a weekly pass EXP limit of 50,000; confirm the exact figure in game.',
+      location: '', guideUrl: A + 'whats-bound/', source: 'U, A (per character, season dates), M (weekly EXP limit, single source)',
+      links: [{ label: 'metabot.gg: Daeva Pass', url: M + 'daeva-pass' }, { label: 'aion2maps: Membership and the shop', url: A + 'membership-and-shop/' }], videos: [] },
     { id: 'commands', title: 'Commands (weekly quests)', category: 'Quests', resetType: 'weekly', scope: 'server', verified: true,
       description: 'Buy and complete weekly Commands: up to 12 from the Command Merchant in your capital (15,000 Kina each) and up to 20 from the Lower Abyss. The limits are per server, shared by your characters.',
       location: 'Command Merchant in your capital; Lower Abyss', guideUrl: A + 'daily-and-weekly/', source: 'A, MM', links: [{ label: 'MeinMMO checklist', url: MM }], videos: [] },
-    { id: 'substance-morph', title: 'Substance Morph (Odyle Energy)', category: 'Crafting', resetType: 'weekly', scope: 'character', verified: true,
+    { id: 'substance-morph', mapLayer: 'odyle', title: 'Substance Morph (Odyle Energy)', category: 'Crafting', resetType: 'weekly', scope: 'character', verified: true,
       description: 'Craft Odyle Energy: two recipes, 40 energy each, from gathered Odyle and 50,000 Kina. Limit 4 per character plus 16 per server each week (up to 20 on your main). Unlocks at level 10.',
       location: 'Crafting menu', guideUrl: A + 'daily-and-weekly/', source: 'A, MM', links: [{ label: 'MeinMMO checklist', url: MM }], videos: [] },
 
     // ---- One-time / ongoing progression (never reset) ----
-    { id: 'strongholds', title: 'Clear your region\'s Strongholds', category: 'Progression', resetType: 'once', scope: 'character', verified: true,
+    { id: 'strongholds', mapLayer: 'stronghold', title: 'Clear your region\'s Strongholds', category: 'Progression', resetType: 'once', scope: 'character', verified: true,
       description: 'Each region (Verteron for Elyos, Altgard for Asmodians) has 15 Strongholds. Clearing them pays Noble Belt Enhance Scrolls for your belt. On Global, the other faction\'s Strongholds pay no belt scrolls.',
       location: 'Verteron (Elyos) / Altgard (Asmodian) open world', guideUrl: A + 'what-to-do-at-45/', source: 'A, K',
       steps: [
@@ -101,7 +103,7 @@
         { label: 'KeenGamer leveling guide', url: 'https://www.keengamer.com/articles/guides/aion-2-leveling-progression-guide-level-1-to-endgame/' },
       ],
       videos: [yt('zaTPBotP5ZI', 'Aragon: Ultimate progression guide, 12 steps to the endgame raid'), yt('u5PM7x0KzZk', 'jenny plays games: What to do at level 45')] },
-    { id: 'monolith', title: 'Monolith: Empyrean Traces', category: 'Progression', resetType: 'once', scope: 'server', verified: true,
+    { id: 'monolith', mapLayer: 'empyrean-trace', title: 'Monolith: Empyrean Traces', category: 'Progression', resetType: 'once', scope: 'server', verified: true,
       description: 'Collect Empyrean Traces and turn them in at your region\'s Monolith. Each Monolith level gives an amulet enhance scroll (30 in all): 80 Traces reach level 10, 255 reach level 20, 560 reach level 30. Do it on one character; levels sync across your characters on the server.',
       location: 'Monoliths near the Dawn Legion Base / Zumion Village (Verteron) or Safe Haven / Nornir Assembly (Altgard) statues', guideUrl: A + 'what-to-do-at-45/', source: 'A, K, allthings.how (level sync is an Asian-release rule)',
       steps: [
@@ -119,7 +121,7 @@
         { label: 'Gamers4Life: World objects', url: 'https://gamers4.life/aion-2/database/en/world-objects/' },
       ],
       videos: [yt('zaTPBotP5ZI', 'Aragon: Ultimate progression guide, 12 steps to the endgame raid'), yt('u5PM7x0KzZk', 'jenny plays games: What to do at level 45')] },
-    { id: 'crafting-start', title: 'Crafting: start and level up', category: 'Crafting', resetType: 'once', scope: 'character', verified: true,
+    { id: 'crafting-start', mapLayer: 'blacksmithing', title: 'Crafting: start and level up', category: 'Crafting', resetType: 'once', scope: 'character', verified: true,
       description: 'Pick one of five professions (Blacksmithing, Armorsmithing, Handicrafting, Alchemy, Cooking), level it to 50, do its promotion quest, then craft gear. Crafted gear binds to the crafter, so craft for the character who will wear it.',
       location: 'Crafting menu (Alt + G); Crafting Table in a town', guideUrl: A + 'crafting/', source: 'A, K',
       steps: [
@@ -136,7 +138,7 @@
         { label: 'aion2hub: Crafting calculator', url: 'https://aion2hub.com/tools/crafting-calculator' },
       ],
       videos: [yt('hTdSVmtl00U', 'aLuckyRO: Drop or craft gear? Gear progression for Global beginners'), yt('xwrSp65-Cig', 'Deathweaver: the five professions and the Market (Portuguese)')] },
-    { id: 'gathering-start', title: 'Gathering (Essence Extraction)', category: 'Crafting', resetType: 'once', scope: 'character', verified: true,
+    { id: 'gathering-start', mapLayer: 'orichalcum-ore', title: 'Gathering (Essence Extraction)', category: 'Crafting', resetType: 'once', scope: 'character', verified: true,
       description: 'Gathering opens at level 10 and has no daily cap. Nodes give ore, gems, logs, herbs, cooking ingredients and Odyle (Odyle only in flight). Each node allows 3 attempts, then disappears. You can max two gathering specialties.',
       location: 'Open-world gathering nodes', guideUrl: A + 'crafting/', source: 'A, K',
       steps: [
@@ -180,6 +182,9 @@
     { label: 'Gamers4Life: World objects (incl. Monoliths)', url: 'https://gamers4.life/aion-2/database/en/world-objects/' },
     { label: 'Gamers4Life: Crafting calculator', url: 'https://gamers4.life/aion-2/database/en/crafting-calculator/' },
     { label: 'Interactive map: Verteron strongholds', url: 'https://interactivemap.app/aion2/maps/verteron/stronghold' },
+    { label: 'Interactive map: Altgard strongholds', url: 'https://interactivemap.app/aion2/maps/altgard/stronghold' },
+    { label: 'aion2.gg: Growth dungeons', url: 'https://aion2.gg/database/dungeons?type=Growth' },
+    { label: 'metabot.gg: Dungeon guide', url: M + 'guides/dungeon-guide' },
     { label: 'aion2t.com: Guides', url: 'https://aion2t.com/guides' },
     { label: 'aion2t.com: Crafting', url: 'https://aion2t.com/crafting' },
     { label: 'QuestLog AION 2 (added by request; could not be read for research)', url: 'https://questlog.gg/aion-2/en' },
