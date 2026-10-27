@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AION 2 Daily Tracker</title>
+  <meta name="description" content="Personal daily and weekly task tracker for AION 2, per character. Unofficial fan tool.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a2f45'/%3E%3Cpath d='M9 17l5 5 9-12' fill='none' stroke='%237ee0c3' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>AION 2 <span>Daily Tracker</span></h1>
+    <div class="topbar-actions">
+      <button id="themeBtn" class="icon-btn" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">🌙</button>
+      <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings">⚙️</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card charbar" aria-label="Character">
+      <label for="charSelect">Character</label>
+      <select id="charSelect"></select>
+      <button id="charsBtn" class="btn" type="button">Manage</button>
+    </section>
+
+    <section class="card resets" aria-label="Reset timers">
+      <div class="reset"><span class="lbl">Daily reset in</span><strong id="dailyCd">--:--:--</strong></div>
+      <div class="reset"><span class="lbl">Weekly reset in</span><strong id="weeklyCd">--</strong></div>
+      <p id="resetNote" class="note"></p>
+    </section>
+
+    <section class="card" aria-label="Progress">
+      <div class="prog">
+        <div class="prog-head"><span>Daily</span><strong id="dailyTxt"></strong></div>
+        <div class="bar"><div id="dailyBar"></div></div>
+      </div>
+      <div class="prog">
+        <div class="prog-head"><span>Weekly</span><strong id="weeklyTxt"></strong></div>
+        <div class="bar weekly"><div id="weeklyBar"></div></div>
+      </div>
+      <div id="catChips" class="chips" aria-label="Progress by category"></div>
+    </section>
+
+    <section class="toolbar" aria-label="Filters">
+      <input id="search" type="search" placeholder="Search title, description, location" aria-label="Search tasks">
+      <select id="fCategory" aria-label="Filter by category"></select>
+      <select id="fStatus" aria-label="Filter by status">
+        <option value="all">All</option>
+        <option value="todo">Not done</option>
+        <option value="done">Done</option>
+      </select>
+      <label class="check"><input id="fHide" type="checkbox"> Hide completed</label>
+      <label class="check"><input id="manage" type="checkbox"> Manage tasks</label>
+      <button id="addTask" class="btn primary" type="button">+ Add task</button>
+    </section>
+
+    <div id="list"></div>
+
+    <footer class="foot">
+      Unofficial fan tool, not affiliated with NCSoft. AION is a trademark of NCSoft. Task info comes from community guides and may be out of date;
+      tasks marked <span class="badge warn">unverified</span> could not be confirmed against two sources.
+    </footer>
+  </main>
+
+  <dialog id="taskDlg">
+    <form method="dialog" id="taskForm" class="form">
+      <h2 id="taskDlgTitle">Task</h2>
+      <label>Title <input name="title" required maxlength="200"></label>
+      <label>Description <textarea name="description" rows="3" maxlength="1000"></textarea></label>
+      <label>Location (zone, NPC or menu path) <input name="location" maxlength="300"></label>
+      <label>Guide URL <input name="guideUrl" type="url" placeholder="https://"></label>
+      <div class="row2">
+        <label>Category <input name="category" list="catList" required maxlength="60"></label>
+        <label>Resets
+          <select name="resetType"><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
+        </label>
+      </div>
+      <label>Source (optional note) <input name="source" maxlength="300"></label>
+      <label class="check"><input name="verified" type="checkbox"> Verified against a source</label>
+      <datalist id="catList"></datalist>
+      <div class="actions">
+        <button type="button" class="btn" data-close>Cancel</button>
+        <button type="submit" class="btn primary" value="save">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="charDlg">
+    <div class="form">
+      <h2>Characters</h2>
+      <ul id="charList" class="charlist"></ul>
+      <form id="charAddForm" class="inline">
+        <input id="charNew" placeholder="New character name" maxlength="60" required aria-label="New character name">
+        <button class="btn primary" type="submit">Add</button>
+      </form>
+      <div class="actions"><button type="button" class="btn" data-close>Close</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="settingsDlg">
+    <div class="form">
+      <h2>Settings</h2>
+      <div class="row2">
+        <label>Daily reset time <input id="sTime" type="time" required></label>
+        <label>Weekly reset day <select id="sDay"></select></label>
+      </div>
+      <label>Timezone <select id="sTz"></select></label>
+      <p class="note warnbox" id="sNote"></p>
+      <button type="button" class="btn" id="sUseCommunity">Use 07:00 UTC (community-reported)</button>
+      <label class="check"><input id="sConfirmed" type="checkbox"> I confirmed this reset time in-game (hides the placeholder warning)</label>
+      <hr>
+      <h3>Data</h3>
+      <div class="inline wrap-btns">
+        <button type="button" class="btn" id="exportBtn">Export JSON</button>
+        <button type="button" class="btn" id="importBtn">Import JSON</button>
+        <input id="importFile" type="file" accept="application/json,.json" hidden>
+      </div>
+      <button type="button" class="btn" id="restoreSeed">Reset default tasks to original list</button>
+      <button type="button" class="btn danger" id="wipeBtn">Erase all data</button>
+      <p id="sMsg" class="note" role="status"></p>
+      <div class="actions"><button type="button" class="btn primary" data-close>Done</button></div>
+    </div>
+  </dialog>
+
+  <script src="js/seed.js"></script>
+  <script src="js/time.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
