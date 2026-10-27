@@ -47,7 +47,9 @@ h1, h2, h3 { margin: 0; line-height: 1.2; }
 .dot.on { background: #3ecf8e; box-shadow: 0 0 0 2px rgba(62,207,142,.3); }
 .evrow strong.closes { color: #ff6b6f; }
 .legend { margin-top: 6px; }
+.legend { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; }
 .legend .dot { margin-right: 4px; }
+.legend .sep { width: 1px; height: 1.1em; background: var(--border); }
 .evrow strong { font-size: 1rem; }
 .reset .lbl { color: var(--muted); font-size: .8rem; }
 .reset strong { font-size: 1.35rem; font-variant-numeric: tabular-nums; color: var(--accent); }
