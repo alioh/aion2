@@ -1,30 +1,30 @@
-# Research summary (2026-10-27)
+# Research summary (updated 2026-10-27)
 
 ## Sources used
-- metabot.gg daily/weekly checklist: https://metabot.gg/en/aion-2/guides/daily-weekly-checklist (fetched in full; all `guideUrl`s point to pages linked from it)
-- metabot.gg weekly reset page: https://metabot.gg/en/aion-2/weekly-reset (reset time, labelled "community-confirmed, not an official statement")
-- mein-mmo.de checklist: https://mein-mmo.de/en/aion-2-daily-weekly-checklist-perfect-start,1589979/ (fetched in full)
-- Search summaries only (pages not fetched, playnews.gg returned 403): playnews.gg reset guide, keengamer.com checklist, games.gg checklist
-- No official NCSoft/AION 2 notice for the reset time was found.
+- aion2maps.com guides (updated Oct 23-26 2026; cites client data, NC statements and streams): daily-and-weekly, whats-bound, dungeons-and-raids, expeditions-and-odyle, abyss, crafting, unlocks, what-to-do-at-45. https://aion2maps.com/guides/all/
+- metabot.gg checklist and weekly-reset page; mein-mmo.de checklist; keengamer.com checklist, crafting and leveling guides; allthings.how Monolith map; aion2hub.com patch note 2026-09-02.
+- Owner confirmation (in game): reset 07:00 UTC; Duty Missions per server; 3 Shugo Festival keys per day at reset.
+- gamers4.life, aion2hub.com, interactivemap.app, aion2t.com: databases/maps/timers, used for links and to confirm that Monoliths, Strongholds and crafting exist. They state no reset times or routines.
+- questlog.gg and aion2.app could not be read; they are only linked.
+- No official NCSoft notice for the reset time was found.
 
-## Verified (2+ sources agree on the essentials)
-Duty Missions, Nightmare boss challenge, Spend Odyle Energy, Dimensional Invasion reward key, Daily Dungeon (Unknown Fissure), Ascension Trial, Exploration (Expedition dungeons; second source is a search summary only).
+## Reset time
+07:00 UTC daily, Wednesday 07:00 UTC weekly (owner, aion2maps.com, metabot.gg, playnews.gg and others). KSA (UTC+3) = 10:00.
 
-## Included but unverified (badge shown)
-- Shugo Festival keys: sources disagree (3/day vs 2/day).
-- metabot.gg only: Subjugation, Raids (Ludra, Corroded Decontamination Facility, Chalice of Muspel), Transcendence dungeons, Abyss time, Growth dungeons, Daeva Pass weekly EXP (limits are season-specific).
+## Verified (2+ sources, or owner-confirmed)
+Duty Missions (per server), Nightmare, Odyle Energy, Shugo Festival keys (3/day), Dimensional Invasion key, Daily Dungeon (per server), Ascension Trial, Exploration, Ludra, Transcendence, Abyss time (7 h; membership bonus disputed), Commands, Substance Morph, Strongholds, Monolith, Crafting, Gathering.
 
-## Not included
-- Monolith, Strongholds: could not find them in any source.
-- Crafting (Substance Morph), Emergency/Weekly Supply Requests, PvP Battlefields, Abyss Events, Sanctuary Raid (a source says Sanctuary is unavailable on Global): single source or conflicting, so left out rather than guessed.
-- Spacetime Rifts and Duty Commands: optional, single source.
+## Unverified (badge shown)
+- Growth dungeons: metabot.gg only; aion2maps does not mention them.
+- Daeva Pass weekly EXP limit: metabot.gg only (per-character purchase and season dates are from aion2maps).
 
-## Known gaps
-- Location is empty for Daeva Pass (not stated by any source) and is shown as "location not confirmed". Most sources give dungeon names but no NPC or menu path.
-- Whether Duty Missions are per character or per server is disputed between sources; the task text says so.
+## Removed after the second pass
+- Subjugation, Corroded Decontamination Facility, Chalice of Muspel: listed by metabot.gg, but aion2maps.com says Global launched with one raid (Ludra) and no Subjugation at launch.
+- Shugo Festival count disagreement is resolved at 3/day.
 
-## Second pass (requested sites)
-- gamers4.life, aion2hub.com, interactivemap.app and aion2t.com are databases/maps/timers. They confirm Monoliths, Strongholds and crafting exist but give **no daily/weekly routine or reset time**, so they are linked under Resources, not added as tasks.
-- aion2hub patch note 2026-09-02: Monoliths are siege targets in a scheduled Stronghold contest (level 50, item level 4,500, weekly event key). That is an event, not a daily task.
-- questlog.gg returned no readable content; aion2.app only listed aion2t.com pages. Both are in Resources as user-supplied.
-- No YouTube guide could be confirmed, so none is seeded. Add your own in the app.
+## Notes
+- Ludra was removed at the 5 October launch and returns on 4 November (NC written, per aion2maps), so it is unavailable until then.
+- Monolith level sync across characters is an Asian-release rule per aion2maps; the task is marked per server on that basis.
+- Videos: YouTube ids were taken from the source lists on aion2maps.com and matched to their titles; they were not watched. Some are non-English (marked in the title).
+- Monolith and Stronghold have no daily/weekly routine, so they are one-time progression tasks. The Rift of Time and Space Stronghold contest (level 50, item level 4,500, weekly event key, Korean patch note) is an event, not tracked.
+- Locations: Daeva Pass has none confirmed.

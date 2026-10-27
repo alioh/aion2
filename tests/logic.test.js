@@ -78,7 +78,9 @@ test('seed integrity: unique ids, https guide URLs, valid reset types', () => {
   for (const t of SEED) {
     assert.ok(!ids.has(t.id), 'dup ' + t.id); ids.add(t.id);
     assert.match(t.guideUrl, /^https:\/\//);
-    assert.ok(['daily', 'weekly'].includes(t.resetType));
+    assert.ok(['daily', 'weekly', 'once'].includes(t.resetType));
+    assert.ok(['character', 'server'].includes(t.scope), t.id);
+    for (const v of t.videos) assert.ok(S.youtubeId(v.url), 'bad video ' + t.id);
     assert.equal(typeof t.verified, 'boolean');
   }
 });
@@ -99,4 +101,50 @@ test('round-trip keeps links and resources; old backups get seed links', () => {
   const mig = S.normalize(old, SEED, SEED.RESOURCES);
   assert.ok(mig.resources.length === st.resources.length);
   assert.ok(mig.tasks.find((t) => t.id === 'duty-missions').links.length >= 1);
+});
+
+test('youtubeId parses common URL shapes', () => {
+  assert.equal(S.youtubeId('https://www.youtube.com/watch?v=hAl6c_LwE3M&t=5'), 'hAl6c_LwE3M');
+  assert.equal(S.youtubeId('https://youtu.be/hAl6c_LwE3M'), 'hAl6c_LwE3M');
+  assert.equal(S.youtubeId('https://www.youtube.com/shorts/hAl6c_LwE3M'), 'hAl6c_LwE3M');
+  assert.equal(S.youtubeId('https://evil.com/watch?v=hAl6c_LwE3M'), '');
+});
+
+test('defaults: confirmed 07:00 UTC reset shown as 10:00 KSA, same instant', () => {
+  const st = S.defaultState(SEED, SEED.RESOURCES);
+  assert.deepStrictEqual([st.settings.resetTime, st.settings.timezone, st.settings.weeklyDay, st.settings.resetConfirmed], ['10:00', 'Asia/Riyadh', 3, true]);
+  assert.equal(T.nextReset('daily', utc('2026-10-27T05:00:00Z'), st.settings), utc('2026-10-27T07:00:00Z'));
+  assert.equal(T.nextReset('weekly', utc('2026-10-27T05:00:00Z'), st.settings), utc('2026-10-28T07:00:00Z'));
+});
+
+test('old placeholder settings are upgraded; user-confirmed ones are kept', () => {
+  const old = S.defaultState(SEED, SEED.RESOURCES);
+  old.settings = { resetTime: '05:00', timezone: 'UTC', weeklyDay: 3, theme: 'light', resetConfirmed: false };
+  const up = S.normalize(JSON.parse(JSON.stringify(old)), SEED, SEED.RESOURCES).settings;
+  assert.deepStrictEqual([up.resetTime, up.timezone, up.resetConfirmed, up.theme], ['10:00', 'Asia/Riyadh', true, 'light']);
+  old.settings = { resetTime: '08:30', timezone: 'Europe/Paris', weeklyDay: 2, theme: 'dark', resetConfirmed: true };
+  assert.equal(S.normalize(JSON.parse(JSON.stringify(old)), SEED, SEED.RESOURCES).settings.resetTime, '08:30');
+});
+
+test('server-scope and one-time completions survive round trip', () => {
+  const st = S.defaultState(SEED, SEED.RESOURCES);
+  st.completions[S.SERVER_KEY] = { 'duty-missions': '2026-10-27' };
+  st.completions[st.characters[0].id] = { monolith: 'once' };
+  assert.deepStrictEqual(S.normalize(JSON.parse(JSON.stringify(st)), SEED, SEED.RESOURCES).completions, st.completions);
+  assert.equal(T.periodKey('once', 0, base), 'once');
+});
+
+test('syncSeed: refreshes defaults, adds new, drops retired, keeps custom/hidden', () => {
+  const st = S.defaultState(SEED, SEED.RESOURCES);
+  st.tasks = st.tasks.filter((t) => t.id !== 'monolith');
+  st.tasks.push(S.cleanTask({ id: 'old-retired', title: 'Retired', category: 'X' }, false));
+  st.tasks.push(S.cleanTask({ id: 'c-mine', title: 'Mine', category: 'X' }, true));
+  st.tasks.find((t) => t.id === 'nightmare').hidden = true;
+  st.tasks.find((t) => t.id === 'duty-missions').description = 'edited';
+  S.syncSeed(st, SEED, SEED.REV, SEED.RESOURCES);
+  const ids = st.tasks.map((t) => t.id);
+  assert.ok(ids.includes('monolith') && ids.includes('c-mine') && !ids.includes('old-retired'));
+  assert.equal(st.tasks.find((t) => t.id === 'nightmare').hidden, true);
+  assert.notEqual(st.tasks.find((t) => t.id === 'duty-missions').description, 'edited');
+  assert.equal(st.seedRev, SEED.REV);
 });

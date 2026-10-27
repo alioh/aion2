@@ -68,6 +68,7 @@
   }
 
   function periodKey(type, nowMs, s) {
+    if (type === 'once') return 'once';
     return key(type === 'weekly' ? lastWeeklyBoundary(nowMs, s) : lastDailyBoundary(nowMs, s));
   }
 

@@ -40,13 +40,16 @@
   }
 
   state = load();
+  S.syncSeed(state, window.SEED_TASKS, window.SEED_REV, window.SEED_RESOURCES);
+  save();
 
   const activeChar = () => state.characters.find((c) => c.id === state.activeCharId) || state.characters[0];
   const key = (type) => T.periodKey(type, nowMs(), state.settings);
-  const isDone = (task) => ((state.completions[activeChar().id] || {})[task.id]) === key(task.resetType);
+  const owner = (task) => (task.scope === 'server' ? S.SERVER_KEY : activeChar().id);
+  const isDone = (task) => ((state.completions[owner(task)] || {})[task.id]) === key(task.resetType);
 
   function setDone(task, done) {
-    const cid = activeChar().id;
+    const cid = owner(task);
     const m = (state.completions[cid] = state.completions[cid] || {});
     if (done) m[task.id] = key(task.resetType); else delete m[task.id];
     save();
@@ -103,7 +106,7 @@
 
   function renderProgress() {
     const live = state.tasks.filter((t) => !t.hidden);
-    for (const type of ['daily', 'weekly']) {
+    for (const type of ['daily', 'weekly', 'once']) {
       const group = live.filter((t) => t.resetType === type);
       const done = group.filter(isDone).length;
       const pct = group.length ? Math.round((done / group.length) * 100) : 0;
@@ -137,6 +140,8 @@
     const badges = h('div', { class: 'badges' },
       h('span', { class: 'badge cat' }, task.category),
       !task.verified && h('span', { class: 'badge warn', title: task.source ? 'Source note: ' + task.source : 'Not confirmed against a source' }, 'unverified'),
+      task.scope === 'server' && h('span', { class: 'badge', title: 'This limit is shared by all your characters on the server' }, 'shared'),
+      task.resetType === 'once' && h('span', { class: 'badge' }, 'one-time'),
       task.hidden && h('span', { class: 'badge' }, 'hidden'));
 
     const loc = task.location
@@ -147,7 +152,7 @@
       ? h('a', { class: 'btn guide', href: task.guideUrl, target: '_blank', rel: 'noopener noreferrer' }, 'Guide ↗')
       : h('span', { class: 'btn guide disabled', 'aria-disabled': 'true' }, 'No guide');
 
-    const extra = task.links.length && h('div', { class: 'links' },
+    const extra = task.links.length > 0 && h('div', { class: 'links' },
       ...task.links.map((l) => h('a', { class: 'linkchip', href: l.url, target: '_blank', rel: 'noopener noreferrer' },
         /youtu/.test(l.url) ? '▶ ' : '🔗 ', l.label)));
 
@@ -166,7 +171,44 @@
         task.description && h('p', { class: 'desc' }, task.description),
         loc,
         h('div', { class: 'row-actions' }, guide, tools),
-        extra));
+        extra,
+        stepsSection(task),
+        videoSection(task)));
+  }
+
+  function stepsSection(task) {
+    if (!task.steps.length) return null;
+    return h('details', { class: 'steps' }, h('summary', {}, 'How to complete (' + task.steps.length + ' steps)'),
+      h('ol', {}, ...task.steps.map((x) => h('li', {}, x))));
+  }
+
+  function videoSection(task) {
+    if (!task.videos.length) return null;
+    const det = h('details', { class: 'vids-wrap' }, h('summary', {}, '\u25B6 Video guides (' + task.videos.length + ')'));
+    let built = false;
+    det.addEventListener('toggle', () => { // build iframes lazily so closed cards load nothing from YouTube
+      if (!det.open || built) return;
+      built = true;
+      det.append(carousel(task.videos));
+    });
+    return det;
+  }
+
+  function carousel(videos) {
+    const track = h('div', { class: 'vids', tabindex: '0', 'aria-label': 'Videos, scroll sideways' },
+      ...videos.map((v) => {
+        const id = S.youtubeId(v.url);
+        return h('figure', { class: 'vid' },
+          id ? h('iframe', {
+            src: 'https://www.youtube-nocookie.com/embed/' + id, title: v.label, loading: 'lazy', allowfullscreen: true,
+            allow: 'accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share',
+            referrerpolicy: 'strict-origin-when-cross-origin',
+          }) : h('a', { class: 'vid-link', href: v.url, target: '_blank', rel: 'noopener noreferrer' }, 'Open video in a new tab'),
+          h('figcaption', {}, v.label, ' ', id && h('a', { href: v.url, target: '_blank', rel: 'noopener noreferrer' }, '\u2197')));
+      }));
+    const nav = (dir, label, txt) => h('button', { class: 'btn sm car', type: 'button', 'aria-label': label,
+      onclick: () => track.scrollBy({ left: dir * track.clientWidth * 0.9, behavior: 'smooth' }) }, txt);
+    return h('div', { class: 'carousel' }, videos.length > 1 && nav(-1, 'Previous video', '\u2039'), track, videos.length > 1 && nav(1, 'Next video', '\u203A'));
   }
 
   function renderList() {
@@ -174,7 +216,7 @@
     const tasks = visibleTasks(manage);
     const root = $('list');
     root.replaceChildren();
-    for (const [type, label] of [['daily', 'Daily tasks'], ['weekly', 'Weekly tasks']]) {
+    for (const [type, label] of [['daily', 'Daily tasks'], ['weekly', 'Weekly tasks'], ['once', 'One-time progression']]) {
       const g = tasks.filter((t) => t.resetType === type);
       if (!g.length) continue;
       root.append(h('section', { class: 'group' }, h('h2', {}, label), ...g.map((t) => taskCard(t, manage))));
@@ -182,12 +224,17 @@
     if (!tasks.length) root.append(h('p', { class: 'empty' }, 'No tasks match. Clear the filters or search.'));
   }
 
+  function utcNote() {
+    const ms = T.nextReset('daily', nowMs(), state.settings);
+    return ' = ' + new Date(ms).toISOString().slice(11, 16) + ' UTC';
+  }
+
   function renderNote() {
     const s = state.settings;
     const wd = DAYS[s.weeklyDay];
     $('resetNote').replaceChildren(
       s.resetConfirmed
-        ? 'Resets daily at ' + s.resetTime + ' (' + s.timezone + '), weekly on ' + wd + '.'
+        ? 'Resets daily at ' + s.resetTime + ' (' + s.timezone + ')' + utcNote() + ', weekly on ' + wd + '.'
         : h('span', {}, h('span', { class: 'badge warn' }, 'placeholder'), ' Reset time ' + s.resetTime + ' ' + s.timezone +
           ' is not confirmed. Community guides report 07:00 UTC (16:00 server time). Verify it in-game in Settings.'));
     if (saveError) $('resetNote').append(h('br'), '⚠ Could not save to browser storage. Export a backup.');
@@ -237,6 +284,9 @@
     const t = task || { title: '', description: '', location: '', guideUrl: '', category: '', resetType: 'daily', source: '', verified: false };
     for (const k of ['title', 'description', 'location', 'guideUrl', 'category', 'resetType', 'source']) f.elements[k].value = t[k] || '';
     f.elements.links.value = S.linksToText(t.links);
+    f.elements.videos.value = S.linksToText(t.videos);
+    f.elements.steps.value = (t.steps || []).join('\n');
+    f.elements.scope.value = t.scope || 'character';
     f.elements.verified.checked = !!t.verified;
     $('taskDlg').showModal();
   }
@@ -249,6 +299,7 @@
     const data = {
       title: f.title.value, description: f.description.value, location: f.location.value, guideUrl: url,
       category: f.category.value, resetType: f.resetType.value, source: f.source.value, verified: f.verified.checked, links: S.parseLinks(f.links.value),
+      videos: S.parseLinks(f.videos.value), steps: f.steps.value.split(/\r?\n/), scope: f.scope.value,
     };
     if (editing) Object.assign(editing, S.cleanTask({ ...editing, ...data }));
     else state.tasks.push(S.cleanTask({ ...data, id: S.uid('c'), custom: true }, true));
@@ -316,7 +367,7 @@
     let list = [];
     try { list = Intl.supportedValuesOf('timeZone'); } catch (e) { /* older browsers */ }
     const local = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    return [...new Set(['UTC', 'Asia/Seoul', local, ...list, state.settings.timezone])];
+    return [...new Set(['UTC', 'Asia/Riyadh', 'Asia/Seoul', local, ...list, state.settings.timezone])];
   }
 
   function openSettings() {
@@ -328,7 +379,7 @@
     $('sTz').replaceChildren(...timezones().map((z) => h('option', { value: z }, z === local ? z + ' (this device)' : z)));
     $('sTz').value = s.timezone;
     $('sConfirmed').checked = s.resetConfirmed;
-    $('sNote').textContent = 'The default 05:00 is only a placeholder. Community guides (not NCSoft) report 07:00 UTC, i.e. 16:00 server time (UTC+9), with the weekly reset on Wednesday. Check the in-game "Daily recharge in" countdown on a ticket tooltip and set it here.';
+    $('sNote').textContent = 'Confirmed global reset: 07:00 UTC daily, weekly on Wednesday (aion2maps.com and other guides, confirmed by you). Saudi Arabia (KSA, UTC+3) is 10:00. Pick any timezone and enter the same moment in it. If your timezone changes clocks for daylight saving, use UTC 07:00 instead.';
     $('sMsg').textContent = '';
     $('settingsDlg').showModal();
   }
@@ -342,7 +393,7 @@
   }
   for (const id of ['sTime', 'sDay', 'sTz', 'sConfirmed']) $(id).addEventListener('change', applySettings);
   $('sUseCommunity').addEventListener('click', () => {
-    $('sTime').value = '07:00'; $('sTz').value = 'UTC'; $('sDay').value = 3; applySettings();
+    $('sTime').value = '10:00'; $('sTz').value = 'Asia/Riyadh'; $('sDay').value = 3; $('sConfirmed').checked = true; applySettings();
   });
   $('settingsBtn').addEventListener('click', openSettings);
   $('themeBtn').addEventListener('click', () => {
@@ -365,7 +416,7 @@
     try {
       const next = S.normalize(JSON.parse(await file.text()), window.SEED_TASKS, window.SEED_RESOURCES);
       if (!confirm('Replace ALL current data with the contents of "' + file.name + '"?')) return;
-      state = next; save(); applyTheme(); openSettings();
+      state = S.syncSeed(next, window.SEED_TASKS, window.SEED_REV, window.SEED_RESOURCES); save(); applyTheme(); openSettings();
       $('sMsg').textContent = 'Imported ' + state.characters.length + ' character(s) and ' + state.tasks.length + ' task(s).';
       render();
     } catch (err) { $('sMsg').textContent = 'Import failed: ' + err.message; }
@@ -373,12 +424,53 @@
   $('restoreSeed').addEventListener('click', () => {
     if (!confirm('Restore the default tasks? Edits to default tasks are lost, hidden ones return, and order is reset. Your own custom tasks are kept.')) return;
     state.tasks = [...S.seedTasks(window.SEED_TASKS), ...state.tasks.filter((t) => t.custom)];
+    state.seedRev = window.SEED_REV;
     save(); render(); $('sMsg').textContent = 'Default tasks restored.';
   });
   $('wipeBtn').addEventListener('click', () => {
     if (!confirm('Erase ALL data (characters, progress, tasks, settings)?')) return;
-    state = S.defaultState(window.SEED_TASKS, window.SEED_RESOURCES); save(); applyTheme(); openSettings(); render();
+    state = S.defaultState(window.SEED_TASKS, window.SEED_RESOURCES); state.seedRev = window.SEED_REV; save(); applyTheme(); openSettings(); render();
   });
+
+  // ---------- map view ----------
+  // Third-party maps shown in a frame (not copied). embed:false = the site refuses to be framed.
+  const MAPS = [
+    { label: 'interactivemap.app: Verteron (Elyos)', url: 'https://interactivemap.app/aion2/maps/verteron', embed: true },
+    { label: 'interactivemap.app: Altgard (Asmodian)', url: 'https://interactivemap.app/aion2/maps/altgard', embed: true },
+    { label: 'QuestLog map', url: 'https://questlog.gg/aion-2/en/map', embed: true },
+    { label: 'aion2t.com map', url: 'https://aion2t.com/map', embed: true },
+    { label: 'aion2maps.com 3D map (opens in a tab)', url: 'https://aion2maps.com/', embed: false },
+    { label: 'aion2hub maps (opens in a tab)', url: 'https://aion2hub.com/maps', embed: false },
+  ];
+  let mapBuilt = false;
+  function showMap() {
+    const m = MAPS[+$('mapSel').value] || MAPS[0];
+    $('mapOpen').href = m.url;
+    const wrap = $('mapFrameWrap');
+    if (!m.embed) {
+      $('mapNote').textContent = 'This site does not allow being shown inside other pages. Use the button to open it.';
+      wrap.replaceChildren();
+      return;
+    }
+    $('mapNote').textContent = 'If the map stays blank, the site may be blocking embedding: use "Open in new tab".';
+    wrap.replaceChildren(h('iframe', { src: m.url, title: m.label, loading: 'lazy', referrerpolicy: 'no-referrer',
+      sandbox: 'allow-scripts allow-same-origin allow-popups allow-forms' }));
+  }
+  function setView(v) {
+    const map = v === 'map';
+    $('trackerView').hidden = map;
+    $('mapView').hidden = !map;
+    $('tabTracker').classList.toggle('active', !map);
+    $('tabMap').classList.toggle('active', map);
+    if (map && !mapBuilt) {
+      mapBuilt = true;
+      $('mapSel').replaceChildren(...MAPS.map((m, i) => h('option', { value: i }, m.label)));
+      showMap();
+    }
+  }
+  $('tabTracker').addEventListener('click', () => setView('tracker'));
+  $('tabMap').addEventListener('click', () => setView('map'));
+  $('mapSel').addEventListener('change', showMap);
 
   // ---------- wiring ----------
   document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => b.closest('dialog').close()));

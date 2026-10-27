@@ -1,92 +1,167 @@
-/* Default task list. Edit this file to change the defaults (see README).
+/* Default task list. Edit this file to change the defaults (see README), then bump SEED_REV so
+ * existing users get the refreshed defaults on next load.
  *
- * verified = true  -> essentials confirmed by 2+ independent sources.
+ * verified = true  -> essentials confirmed by 2+ independent sources (or by the user in game).
  * verified = false -> single source, or sources disagree (see `source`). Shown with an "unverified" badge.
  * An empty field means it could not be confirmed. Nothing here is invented.
- * Sources: M = metabot.gg checklist (fetched 2026-10-27), MM = mein-mmo.de checklist,
- *          K = keengamer.com checklist (search summary), P = playnews.gg (search summary). */
+ * scope: "character" (own limit per character) or "server" (shared by every character on the server).
+ * resetType: "daily" | "weekly" | "once" (one-time/ongoing progression, never resets).
+ * Sources: A = aion2maps.com guides (updated Oct 23-26 2026), M = metabot.gg checklist, MM = mein-mmo.de,
+ *          K = keengamer.com, U = confirmed by the app owner. Video ids come from the source lists on aion2maps.com. */
 (function (root) {
   const M = 'https://metabot.gg/en/aion-2/';
   const MM = 'https://mein-mmo.de/en/aion-2-daily-weekly-checklist-perfect-start,1589979/';
+  const A = 'https://aion2maps.com/guides/';
+  const H = 'https://aion2hub.com/database/';
+  const yt = (id, label) => ({ label, url: 'https://www.youtube.com/watch?v=' + id });
+
+  const SEED_REV = 2;
 
   const SEED_TASKS = [
     // ---- Daily ----
-    { id: 'duty-missions', title: 'Duty Missions', category: 'Duties', resetType: 'daily', verified: true,
-      description: 'Complete up to 5 Duty Missions (Wanted bounties) per day; each pays 50,000 bound Kinah and 1,000 Abyss Points. Unlocks at level 45. Sources disagree whether the limit is per character or shared per server.',
-      location: 'Quest journal', guideUrl: M + 'guides/daily-weekly-checklist', source: 'M, MM, P' },
-    { id: 'nightmare', title: 'Nightmare boss challenge', category: 'Dungeons', resetType: 'daily', verified: true,
-      description: 'Use your 2 daily Nightmare attempts (banked up to 14) on the lowest boss tier you have not cleared. Attempts are only spent on a clear. Rewards Phantasmal Fragments.',
-      location: 'Nightmare boss ladder (starts at Gatekeeper Pinopi, tier 1)', guideUrl: M + 'bosses', source: 'M, MM' },
-    { id: 'odyle-energy', title: 'Spend Odyle Energy', category: 'Dungeons', resetType: 'daily', verified: true,
-      description: 'Odyle Energy refills 15 every 3 hours (120/day) and is lost once capped. Spend it on Conquest cubes (40 energy each; Expedition cubes cost 20).',
-      location: 'Conquest dungeons, e.g. Draupnir or Ferocious Horn Den', guideUrl: M + 'items/odyle-energy', source: 'M, MM, P' },
-    { id: 'invasion-key', title: 'Dimensional Invasion reward key', category: 'Events', resetType: 'daily', verified: true,
-      description: 'You get 1 Dimensional Invasion reward key per day (stores up to 7). Use it to open the reward box when an invasion event happens.',
-      location: 'Dimensional Invasion (random event)', guideUrl: M + 'guides/daily-weekly-checklist', source: 'M, MM' },
-    { id: 'shugo-festival', title: 'Shugo Festival reward keys', category: 'Events', resetType: 'daily', verified: false,
-      description: 'Spend your Shugo Festival reward keys to claim festival rewards. Sources disagree on the daily refill (2 vs 3 keys), so check the in-game counter.',
-      location: 'Shugo Festival', guideUrl: M + 'events', source: 'M says 3/day, MM says 2/day' },
+    { id: 'duty-missions', title: 'Duty Missions', category: 'Duties', resetType: 'daily', scope: 'server', verified: true,
+      description: 'Complete up to 5 Duty Missions (Wanted bounties) per day, from level 45. The limit is per server: all your characters share it, so do them on your main. Each quest offers 5 random rewards; refreshing costs Kina (1,000 first). Each pays 50,000 bound Kinah and 1,000 Abyss Points.',
+      location: 'Journal / map: Duty tab', guideUrl: A + 'daily-and-weekly/', source: 'A, M, MM, U (per server confirmed by owner)',
+      links: [
+        { label: 'games.gg Duty Missions guide', url: 'https://games.gg/aion-2/guides/aion-2-duty-missions-guide/' },
+        { label: 'MeinMMO checklist', url: MM },
+      ],
+      videos: [yt('cQzf-1a0sX0', 'Aragon: Stop picking the wrong duty quest rewards')] },
+    { id: 'nightmare', title: 'Nightmare boss challenge', category: 'Dungeons', resetType: 'daily', scope: 'character', verified: true,
+      description: 'Use your 2 daily Nightmare entries (banked up to 14) on the lowest boss you have not cleared, from level 45. Attempts are only spent on a clear. Rewards Phantasmal Fragments (Daevanion Crystals, Stigma Shards, Pantheon statues).',
+      location: 'Nightmare boss ladder (starts at Gatekeeper Pinopi, tier 1)', guideUrl: A + 'nightmare/', source: 'A, M, MM',
+      links: [{ label: 'aion2hub Nightmare database', url: H + 'nightmare' }, { label: 'metabot.gg bosses', url: M + 'bosses' }],
+      videos: [yt('DOkdiksIxB4', 'BoredAF: Complete Nightmare Boss Guide, Season 1')] },
+    { id: 'odyle-energy', title: 'Spend Odyle Energy', category: 'Dungeons', resetType: 'daily', scope: 'character', verified: true,
+      description: 'Odyle Energy refills 15 every 3 hours (120/day) per character and stops at the cap (560, or 840 with membership), so spend it. Energy pays for the reward cube, not entry: 40 per claim (20 in Krao Cave/Urugugu Canyon Exploration, 30 in Fire Temple Exploration).',
+      location: 'Expedition / Conquest dungeons, e.g. Draupnir or Ferocious Horn Den', guideUrl: A + 'expeditions-and-odyle/', source: 'A, M, MM',
+      links: [{ label: 'aion2hub: Draupnir', url: H + 'instance/draupnir' }, { label: 'aion2hub: Ferocious Horn Den', url: H + 'instance/ferocious-horn-den' }],
+      videos: [yt('yShlY0zlQNc', 'Madsin: Draupnir Cave guide')] },
+    { id: 'shugo-festival', title: 'Shugo Festival reward keys', category: 'Events', resetType: 'daily', scope: 'server', verified: true,
+      description: 'You get 3 Shugo Festival Reward Keys every day at the daily reset (07:00 UTC). They stop at 12 (21 with membership), so spend them before they cap. Shared across your characters on the server.',
+      location: 'Shugo Festival', guideUrl: A + 'daily-and-weekly/', source: 'U (3 keys/day at reset), A, M; MM said 2/day',
+      links: [{ label: 'metabot.gg events', url: M + 'events' }], videos: [] },
+    { id: 'invasion-key', title: 'Dimensional Invasion reward key', category: 'Events', resetType: 'daily', scope: 'server', verified: true,
+      description: 'You get 1 Dimensional Invasion reward key per day (stores up to 7), shared across your characters. An invasion can start at :30 of some hours: press Enter on the button beside the minimap within its 3-minute countdown to join the 6-player map.',
+      location: 'Dimensional Invasion (random event)', guideUrl: A + 'daily-and-weekly/', source: 'A, M, MM', links: [], videos: [] },
 
     // ---- Weekly ----
-    { id: 'daily-dungeon', title: 'Daily Dungeon (Unknown Fissure)', category: 'Dungeons', resetType: 'weekly', verified: true,
-      description: 'Enter Daeva Bio-Research Base. You have 14 entries per week (about 2 per day). Sources say the pool is per server rather than per character.',
-      location: 'Unknown Fissure: Daeva Bio-Research Base', guideUrl: M + 'dungeons/daeva-bio-research-base', source: 'M, MM, K' },
-    { id: 'ascension-trial', title: 'Ascension Trial', category: 'Dungeons', resetType: 'weekly', verified: true,
-      description: 'Solo entries into Nightmare Altar and its five sister dungeons. 3 entries per week, spent on entry, per character.',
-      location: 'Nightmare Altar and its sister dungeons', guideUrl: M + 'dungeons/nightmare-altar', source: 'M, MM' },
-    { id: 'exploration', title: 'Exploration (Expedition dungeons)', category: 'Dungeons', resetType: 'weekly', verified: true,
-      description: 'Run Expedition dungeons for reward counts: 7 per dungeon per week, no carry-over. Krao Cave and Urugugu Canyon cubes cost 20 Odyle Energy each.',
-      location: 'Expedition dungeons, e.g. Krao Cave, Urugugu Canyon', guideUrl: M + 'dungeons/krao-cave', source: 'M, K' },
-    { id: 'subjugation', title: 'Subjugation', category: 'Dungeons', resetType: 'weekly', verified: false,
-      description: '4-player dungeons such as Subjugation Closed. 3 tickets per week, spent on entry.',
-      location: 'Subjugation dungeons, e.g. Subjugation Closed', guideUrl: M + 'dungeons/subjugation-closed', source: 'M only' },
-    { id: 'raid-ludra', title: 'Raid: Abyssal Forge: Ludra', category: 'Dungeons', resetType: 'weekly', verified: false,
-      description: '4 attempts per week (spent on entry) and 1 final-boss reward kill per week.',
-      location: 'Abyssal Forge: Ludra', guideUrl: M + 'dungeons/abyssal-forge-ludra', source: 'M only' },
-    { id: 'raid-decon', title: 'Raid: Corroded Decontamination Facility', category: 'Dungeons', resetType: 'weekly', verified: false,
-      description: '4 attempts per week (spent on entry) and 2 final-boss reward kills per week.',
-      location: 'Corroded Decontamination Facility', guideUrl: M + 'dungeons/corroded-decontamination-facility', source: 'M only' },
-    { id: 'raid-muspel', title: 'Raid: Chalice of Muspel', category: 'Dungeons', resetType: 'weekly', verified: false,
-      description: '4 attempts per week (spent on entry) and 2 final-boss reward kills per week.',
-      location: 'Chalice of Muspel', guideUrl: M + 'dungeons/chalice-of-muspel', source: 'M only' },
-    { id: 'transcendence', title: 'Transcendence dungeons', category: 'Dungeons', resetType: 'weekly', verified: false,
-      description: 'Run Deus Research Base or Shattered Arkanis once you reach the 1,600 item level gate. Up to 28 final-boss kills per week; cubes cost 40 Odyle Energy.',
-      location: 'Deus Research Base, Shattered Arkanis', guideUrl: M + 'dungeons/deus-research-base', source: 'M only' },
-    { id: 'abyss-time', title: 'Abyss time', category: 'Abyss', resetType: 'weekly', verified: false,
-      description: 'Weekly time allowance in the Abyss layers: 7 hours per layer (14 hours for Lower and Middle with a subscription).',
-      location: 'Chaotic Lower Reshanta, Chaotic Middle Reshanta, Upper Reshanta', guideUrl: M + 'map/chaotic-lower-reshanta', source: 'M only' },
-    { id: 'growth-dungeons', title: 'Growth dungeons', category: 'Dungeons', resetType: 'weekly', verified: false,
-      description: 'Weekly time allowance of 7 hours each in Silent Graveyard and Fafnite Amphitheater. Time only counts while inside.',
-      location: 'Silent Graveyard, Fafnite Amphitheater', guideUrl: M + 'dungeons/silent-graveyard', source: 'M only' },
-    { id: 'daeva-pass', title: 'Daeva Pass weekly EXP', category: 'Events', resetType: 'weekly', verified: false,
-      description: 'Reach the weekly pass EXP limit (50,000 on the Season 1 pass at time of research; the limit may change each season).',
-      location: '', guideUrl: M + 'daeva-pass', source: 'M only' },
-  ];
+    { id: 'daily-dungeon', title: 'Daily Dungeon (Unknown Fissure)', category: 'Dungeons', resetType: 'weekly', scope: 'server', verified: true,
+      description: 'Enter Daeva Bio-Research Base: 14 runs per week (about 2 a day), shared across your characters on the server. It pays Enhance Stones; the top reward tier needs a score of 10,000.',
+      location: 'Unknown Fissure: Daeva Bio-Research Base', guideUrl: M + 'dungeons/daeva-bio-research-base', source: 'A, M, MM, K',
+      links: [{ label: 'MeinMMO checklist', url: MM }], videos: [] },
+    { id: 'ascension-trial', title: 'Ascension Trial', category: 'Dungeons', resetType: 'weekly', scope: 'character', verified: true,
+      description: 'Solo entries, 3 per week per character, from item level 1,000. Difficulties open at item level 1,000 / 1,500 / 2,000 / 2,500; entering on the last day before the reset puts you in the highest difficulty your item level reached that week.',
+      location: 'Nightmare Altar and its sister dungeons', guideUrl: M + 'dungeons/nightmare-altar', source: 'A, M, MM',
+      links: [{ label: 'MeinMMO checklist', url: MM }], videos: [] },
+    { id: 'exploration', title: 'Exploration (Expedition dungeons)', category: 'Dungeons', resetType: 'weekly', scope: 'character', verified: true,
+      description: 'Run Expedition dungeons in Exploration mode for reward counts: 7 per dungeon per week, no carry-over. Krao Cave and Urugugu Canyon claims cost 20 Odyle Energy each.',
+      location: 'Expedition dungeons, e.g. Krao Cave, Urugugu Canyon', guideUrl: M + 'dungeons/krao-cave', source: 'M, K',
+      links: [{ label: 'aion2hub: Krao Cave', url: H + 'instance/krao-cave' }, { label: 'aion2hub: Urugugu Canyon', url: H + 'instance/urugugu-canyon' }], videos: [] },
+    { id: 'raid-ludra', title: 'Raid: Ludra', category: 'Dungeons', resetType: 'weekly', scope: 'character', verified: true,
+      description: 'Global\'s only raid at launch (10 players). 1 rewarded kill per week at 40 Odyle Energy, Normal from item level 2,800. It was removed at launch and returns on 4 November (NC announcement), so it is not available before then.',
+      location: 'Abyssal Forge: Ludra (Sanctuary)', guideUrl: A + 'ludra/', source: 'A, M',
+      links: [{ label: 'aion2hub: Abyssal Forge: Ludra', url: H + 'instance/abyssal-forge-ludra' }],
+      videos: [yt('b7TwvT6mgS4', 'Madsin: Sanctuary Eternal Ludra guide')] },
+    { id: 'transcendence', title: 'Transcendence dungeons', category: 'Dungeons', resetType: 'weekly', scope: 'character', verified: true,
+      description: 'Run Deus Research Base or Shattered Arkanis from item level 1,600 (2 to 5 players). Claims cost 40 Odyle Energy. Leaving without claiming the cube uses one of your 10 unclaimed runs per week (shared per server).',
+      location: 'Deus Research Base, Shattered Arkanis', guideUrl: A + 'transcendence/', source: 'A, M',
+      links: [{ label: 'metabot.gg: Deus Research Base', url: M + 'dungeons/deus-research-base' }, { label: 'metabot.gg: Shattered Arkanis', url: M + 'dungeons/shattered-arkanis' }],
+      videos: [yt('VIJGZG8XrNc', 'selegames: Transcendence guide, Deus Research Base and Shattered Arkanis (Japanese)')] },
+    { id: 'abyss-time', title: 'Abyss time', category: 'Abyss', resetType: 'weekly', scope: 'character', verified: true,
+      description: 'Weekly time allowance in the Abyss: 7 hours, resetting Wednesday with no carry-over. Global opens with Lower Reshanta only. One source says members get 14 hours; another says membership gives no extra Abyss time, so check in game.',
+      location: 'Lower Reshanta (Abyss)', guideUrl: A + 'abyss/', source: 'A, M (membership bonus disputed)',
+      links: [{ label: 'metabot.gg: Chaotic Lower Reshanta', url: M + 'map/chaotic-lower-reshanta' }], videos: [] },
+    { id: 'growth-dungeons', title: 'Growth dungeons', category: 'Dungeons', resetType: 'weekly', scope: 'character', verified: false,
+      description: 'Weekly time allowance of 7 hours each in Silent Graveyard and Fafnite Amphitheater; time only counts while inside. Only metabot.gg lists this and aion2maps does not mention it, so confirm it in game.',
+      location: 'Silent Graveyard, Fafnite Amphitheater', guideUrl: M + 'dungeons/silent-graveyard', source: 'M only', links: [], videos: [] },
+    { id: 'daeva-pass', title: 'Daeva Pass weekly EXP', category: 'Events', resetType: 'weekly', scope: 'character', verified: false,
+      description: 'The Daeva Pass is bought and progressed per character. Reach the weekly pass EXP limit (50,000 on the Season 1 pass per metabot.gg; Season 1 runs 30 Sep to 16 Dec 2026). Spend Daeva Pass Shop Coins before the season ends.',
+      location: '', guideUrl: M + 'daeva-pass', source: 'M (limit); A (per character, season dates)', links: [{ label: 'aion2maps: What\'s tied to character/server/account', url: A + 'whats-bound/' }], videos: [] },
+    { id: 'commands', title: 'Commands (weekly quests)', category: 'Quests', resetType: 'weekly', scope: 'server', verified: true,
+      description: 'Buy and complete weekly Commands: up to 12 from the Command Merchant in your capital (15,000 Kina each) and up to 20 from the Lower Abyss. The limits are per server, shared by your characters.',
+      location: 'Command Merchant in your capital; Lower Abyss', guideUrl: A + 'daily-and-weekly/', source: 'A, MM', links: [{ label: 'MeinMMO checklist', url: MM }], videos: [] },
+    { id: 'substance-morph', title: 'Substance Morph (Odyle Energy)', category: 'Crafting', resetType: 'weekly', scope: 'character', verified: true,
+      description: 'Craft Odyle Energy: two recipes, 40 energy each, from gathered Odyle and 50,000 Kina. Limit 4 per character plus 16 per server each week (up to 20 on your main). Unlocks at level 10.',
+      location: 'Crafting menu', guideUrl: A + 'daily-and-weekly/', source: 'A, MM', links: [{ label: 'MeinMMO checklist', url: MM }], videos: [] },
 
-  // Extra reference links per task (all URLs seen in fetched/search results; no videos could be confirmed).
-  const H = 'https://aion2hub.com/database/';
-  const EXTRA = {
-    'duty-missions': [
-      { label: 'games.gg Duty Missions guide', url: 'https://games.gg/aion-2/guides/aion-2-duty-missions-guide/' },
-      { label: 'MeinMMO checklist', url: MM },
-    ],
-    'nightmare': [{ label: 'aion2hub Nightmare database', url: H + 'nightmare' }],
-    'odyle-energy': [
-      { label: 'aion2hub: Draupnir', url: H + 'instance/draupnir' },
-      { label: 'aion2hub: Ferocious Horn Den', url: H + 'instance/ferocious-horn-den' },
-    ],
-    'exploration': [
-      { label: 'aion2hub: Krao Cave', url: H + 'instance/krao-cave' },
-      { label: 'aion2hub: Urugugu Canyon', url: H + 'instance/urugugu-canyon' },
-    ],
-    'raid-ludra': [{ label: 'aion2hub: Abyssal Forge: Ludra', url: H + 'instance/abyssal-forge-ludra' }],
-    'daily-dungeon': [{ label: 'MeinMMO checklist', url: MM }],
-    'ascension-trial': [{ label: 'MeinMMO checklist', url: MM }],
-  };
-  for (const t of SEED_TASKS) t.links = EXTRA[t.id] || [];
+    // ---- One-time / ongoing progression (never reset) ----
+    { id: 'strongholds', title: 'Clear your region\'s Strongholds', category: 'Progression', resetType: 'once', scope: 'character', verified: true,
+      description: 'Each region (Verteron for Elyos, Altgard for Asmodians) has 15 Strongholds. Clearing them pays Noble Belt Enhance Scrolls for your belt. On Global, the other faction\'s Strongholds pay no belt scrolls.',
+      location: 'Verteron (Elyos) / Altgard (Asmodian) open world', guideUrl: A + 'what-to-do-at-45/', source: 'A, K',
+      steps: [
+        'Open the 3D map or the in-game Navigator (it starts pointing you at Strongholds from about level 12-13).',
+        'Find the 15 Strongholds in your own faction\'s region and group nearby ones into one route.',
+        'Clear every Stronghold on that route.',
+        'Use the Noble Belt Enhance Scroll rewards on your progression belt.',
+        'Skip the other faction\'s Strongholds: on Global they give no belt scrolls.',
+      ],
+      links: [
+        { label: 'Interactive map: Verteron strongholds', url: 'https://interactivemap.app/aion2/maps/verteron/stronghold' },
+        { label: 'KeenGamer leveling guide', url: 'https://www.keengamer.com/articles/guides/aion-2-leveling-progression-guide-level-1-to-endgame/' },
+      ],
+      videos: [yt('zaTPBotP5ZI', 'Aragon: Ultimate progression guide, 12 steps to the endgame raid'), yt('u5PM7x0KzZk', 'jenny plays games: What to do at level 45')] },
+    { id: 'monolith', title: 'Monolith: Empyrean Traces', category: 'Progression', resetType: 'once', scope: 'server', verified: true,
+      description: 'Collect Empyrean Traces and turn them in at your region\'s Monolith. Each Monolith level gives an amulet enhance scroll (30 in all): 80 Traces reach level 10, 255 reach level 20, 560 reach level 30. Do it on one character; levels sync across your characters on the server.',
+      location: 'Monoliths near the Dawn Legion Base / Zumion Village (Verteron) or Safe Haven / Nornir Assembly (Altgard) statues', guideUrl: A + 'what-to-do-at-45/', source: 'A, K, allthings.how (level sync is an Asian-release rule)',
+      steps: [
+        'Open the 3D map\'s Collect panel: it shows every Empyrean Trace and the Monolith.',
+        'Collect Traces placed along your normal quest routes; use flight and gliding for elevated ones. Do hard or isolated ones later.',
+        'Teleport to the statue named after the Monolith\'s area and walk to it (about 20 to 150 m).',
+        'Turn the Traces in at the Monolith. Aim for level 10 (80 Traces) first, then 20 (255) and 30 (560).',
+        'Take the amulet enhance scroll for each level and use it on your amulet.',
+        'In the Abyss, Lower Reshanta holds 200 Traces: turning them in at its Monolith gives 36 Daevanion Crystal: Azphel. Your other characters can sync the levels instead of collecting again.',
+        'Note: on Global the Monolith pays no skill points.',
+      ],
+      links: [
+        { label: 'allthings.how: Monolith locations', url: 'https://allthings.how/aion-2/map/monoliths/' },
+        { label: 'aion2hub: Monoliths database', url: H + 'monoliths' },
+        { label: 'Gamers4Life: World objects', url: 'https://gamers4.life/aion-2/database/en/world-objects/' },
+      ],
+      videos: [yt('zaTPBotP5ZI', 'Aragon: Ultimate progression guide, 12 steps to the endgame raid'), yt('u5PM7x0KzZk', 'jenny plays games: What to do at level 45')] },
+    { id: 'crafting-start', title: 'Crafting: start and level up', category: 'Crafting', resetType: 'once', scope: 'character', verified: true,
+      description: 'Pick one of five professions (Blacksmithing, Armorsmithing, Handicrafting, Alchemy, Cooking), level it to 50, do its promotion quest, then craft gear. Crafted gear binds to the crafter, so craft for the character who will wear it.',
+      location: 'Crafting menu (Alt + G); Crafting Table in a town', guideUrl: A + 'crafting/', source: 'A, K',
+      steps: [
+        'Crafting opens at level 10. Choose a profession that matches your class\'s main gear: Blacksmithing for Gladiator, Templar, Assassin, Cleric; Handicrafting for Ranger, Chanter; Alchemy for Sorcerer, Spiritmaster.',
+        'Open the Crafting menu (Alt + G) and go to a Crafting Table: Dawn Legion Base or Zumion Village in Verteron (Elyos), Safe Haven or Nornir Assembly in Altgard (Asmodians).',
+        'Craft cheap Common recipes (e.g. Orichalcum Ingots) to raise proficiency; check the Expected Probability tab first. The success gauge must fill before the failure gauge.',
+        'At proficiency 50, complete the profession\'s promotion (Professional) quest to go further; each craft levels separately up to 100.',
+        'At about proficiency 55, craft True Dragon Lord gear (item level 62), the only direct Unique craft, then upcraft it step by step to 102 (upcrafts always succeed). Craft a ring first.',
+        'Craft on the character that will wear the gear, put enhancement into crafted gear, and do not take damage mid-craft (it counts as a failure).',
+      ],
+      links: [
+        { label: 'KeenGamer crafting guide', url: 'https://www.keengamer.com/articles/guides/aion-2-crafting-guide-professions-gear-materials/' },
+        { label: 'Gamers4Life: Crafting calculator', url: 'https://gamers4.life/aion-2/database/en/crafting-calculator/' },
+        { label: 'aion2hub: Crafting calculator', url: 'https://aion2hub.com/tools/crafting-calculator' },
+      ],
+      videos: [yt('hTdSVmtl00U', 'aLuckyRO: Drop or craft gear? Gear progression for Global beginners'), yt('xwrSp65-Cig', 'Deathweaver: the five professions and the Market (Portuguese)')] },
+    { id: 'gathering-start', title: 'Gathering (Essence Extraction)', category: 'Crafting', resetType: 'once', scope: 'character', verified: true,
+      description: 'Gathering opens at level 10 and has no daily cap. Nodes give ore, gems, logs, herbs, cooking ingredients and Odyle (Odyle only in flight). Each node allows 3 attempts, then disappears. You can max two gathering specialties.',
+      location: 'Open-world gathering nodes', guideUrl: A + 'crafting/', source: 'A, K',
+      steps: [
+        'Reach level 10 and gather from nodes while you level. Odyle nodes can only be extracted while flying.',
+        'Each node uses a success gauge versus a failure gauge and allows 3 attempts, success or failure.',
+        'Spend Common skill points on Proficient Handling and Delicate Touch (aim for 10 each), then Lady Luck.',
+        'Gathering proficiency runs to 100 and pays 14 Specialty points: each material type costs 7 to max (Seeker 1, Plentiful Harvest 3, Appraiser 3). You can max two.',
+        'At gathering level 50, start the quest: talk to Korius in Verteron\'s Dawn Legion Base (Asmodians: Alzirr in Altgard\'s Safe Haven) and extract Ruby nodes until you get one Splendent Ruby.',
+        'Resetting skill points costs 50,000 Kina.',
+      ],
+      links: [
+        { label: 'Interactive map: Verteron gathering (Orichalcum Ore)', url: 'https://interactivemap.app/aion2/maps/verteron/orihalum-ore' },
+        { label: 'KeenGamer crafting guide', url: 'https://www.keengamer.com/articles/guides/aion-2-crafting-guide-professions-gear-materials/' },
+      ],
+      videos: [yt('xwrSp65-Cig', 'Deathweaver: the five professions and the Market (Portuguese)')] },
+  ];
 
   // General reference library (editable in the app under "Resources").
   const SEED_RESOURCES = [
+    { label: 'aion2maps.com: All guides', url: A + 'all/' },
+    { label: 'aion2maps.com: Daily and weekly', url: A + 'daily-and-weekly/' },
+    { label: 'aion2maps.com: What to do at 45', url: A + 'what-to-do-at-45/' },
+    { label: 'aion2maps.com: What\'s tied to character, server or account', url: A + 'whats-bound/' },
+    { label: 'aion2maps.com: 3D map', url: 'https://aion2maps.com/' },
+    { label: 'Grobs: Daily and weekly checklist and a week-one plan (YouTube)', url: 'https://www.youtube.com/watch?v=hAl6c_LwE3M' },
     { label: 'metabot.gg: Daily & weekly checklist', url: M + 'guides/daily-weekly-checklist' },
     { label: 'metabot.gg: Weekly reset times', url: M + 'weekly-reset' },
     { label: 'games.gg: Daily & weekly checklist', url: 'https://games.gg/aion-2/guides/aion-2-daily-weekly-checklist/' },
@@ -105,7 +180,6 @@
     { label: 'Gamers4Life: World objects (incl. Monoliths)', url: 'https://gamers4.life/aion-2/database/en/world-objects/' },
     { label: 'Gamers4Life: Crafting calculator', url: 'https://gamers4.life/aion-2/database/en/crafting-calculator/' },
     { label: 'Interactive map: Verteron strongholds', url: 'https://interactivemap.app/aion2/maps/verteron/stronghold' },
-    { label: 'Interactive map: Verteron', url: 'https://interactivemap.app/aion2/maps/verteron' },
     { label: 'aion2t.com: Guides', url: 'https://aion2t.com/guides' },
     { label: 'aion2t.com: Crafting', url: 'https://aion2t.com/crafting' },
     { label: 'QuestLog AION 2 (added by request; could not be read for research)', url: 'https://questlog.gg/aion-2/en' },
@@ -114,5 +188,8 @@
 
   root.SEED_TASKS = SEED_TASKS;
   root.SEED_RESOURCES = SEED_RESOURCES;
-  if (typeof module !== 'undefined' && module.exports) { module.exports = SEED_TASKS; module.exports.RESOURCES = SEED_RESOURCES; }
+  root.SEED_REV = SEED_REV;
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = SEED_TASKS; module.exports.RESOURCES = SEED_RESOURCES; module.exports.REV = SEED_REV;
+  }
 })(typeof window !== 'undefined' ? window : globalThis);

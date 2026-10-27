@@ -23,16 +23,19 @@ Then open http://localhost:8000.
 
 Your progress is stored per browser and per site address. Use **Settings → Export JSON** to move it between devices or back it up.
 
-## Reset time: placeholder, and where to find the real one
+## Reset time
 
-The default daily reset is **05:00 UTC, which is only a placeholder**. I found no official NCSoft statement of the global reset time. Community guides (metabot.gg, playnews.gg, games.gg and others) report **07:00 UTC = 16:00 server time (UTC+9), with the weekly reset on Wednesday**. metabot.gg itself labels this "community-confirmed, not an official statement".
+The global reset is **07:00 UTC every day, and Wednesday 07:00 UTC for weekly counters**. It is confirmed by the app owner, by aion2maps.com (client data) and by other guides; no official NCSoft notice was found. The app defaults to **10:00 in Asia/Riyadh (KSA, UTC+3), which is the same moment**, and shows the UTC equivalent next to the timer.
 
-To confirm it yourself: in game, hover an entry-counter tooltip (it shows "Daily recharge in" / "Weekly recharge in"), compare with the current time, then set the time, timezone and weekday in **Settings**. A button there applies the community value (07:00 UTC, Wednesday). Tick "I confirmed this reset time in-game" to hide the placeholder warning. Also check the official AION 2 site's notices.
+You can choose any timezone in **Settings**: enter the same moment in it (for example 09:00 in Europe/Paris in winter). If your timezone has daylight saving time, use UTC 07:00 instead, because the reset itself stays at 07:00 UTC while your local hour shifts.
 
-## Links, videos and resources
+## Tasks, guides, videos and maps
 
-- Every task has a primary **Guide** button plus any number of extra link chips. In **Manage tasks → Edit**, add one per line as `Label | URL` (or just a URL). YouTube links get a ▶ icon.
-- The **📚 Resources** button opens a library of databases, maps, timers and guides you can add to or remove from. It is saved and included in exports.
+- **Per server vs per character:** each task has a limit scope. Per-server tasks (Duty Missions, Shugo Festival keys, Daily Dungeon, Commands, ...) show a "shared" badge and are ticked once for all your characters.
+- **One-time progression** tasks (Strongholds, Monolith, Crafting, Gathering) never reset and have a **How to complete** step list.
+- **Guides:** each task has a primary **Guide** button, extra guide links, and **Video guides**. YouTube links are embedded (open the "Video guides" section; swipe or use the arrows to move between videos; they load only when opened). Add them in **Manage tasks → Edit**, one per line as `Label | URL` or just a URL.
+- **📚 Resources** is an editable library of databases, maps, timers and guides, saved and included in exports.
+- **Map tab:** shows third-party interactive maps (interactivemap.app, QuestLog, aion2t.com) in a frame. aion2maps.com and aion2hub forbid framing, so they open in a new tab. Nothing is copied from those sites.
 - Only http(s) links are accepted.
 
 ## How resets work
@@ -42,7 +45,7 @@ Each completion is stored as the date of the reset period in which you ticked it
 ## Editing the seed tasks
 
 - In the app: switch on **Manage tasks** to edit, hide, delete and reorder (↑/↓). **+ Add task** creates your own. **Settings → Reset default tasks** restores the original list (your custom tasks are kept).
-- In the code: edit `js/seed.js`. Each task has `id`, `title`, `description`, `location`, `guideUrl`, `category`, `resetType` (`"daily"`/`"weekly"`), `verified`, plus an optional `source` note. Leave a field empty if you cannot confirm it and set `verified: false`; the UI shows an "unverified" badge. Existing users keep their saved tasks, so use **Reset default tasks** (or Erase all data) to pick up seed changes.
+- In the code: edit `js/seed.js`. Each task has `id`, `title`, `description`, `location`, `guideUrl`, `category`, `resetType` (`"daily"`/`"weekly"`), `verified`, `scope` (`"character"`/`"server"`), `resetType` (`"daily"`/`"weekly"`/`"once"`), plus optional `source`, `steps`, `links` and `videos`. Leave a field empty if you cannot confirm it and set `verified: false`; the UI shows an "unverified" badge. Bump `SEED_REV` in `js/seed.js` after editing: on next load the app refreshes default tasks for existing users, adds new ones and removes retired ones (custom tasks, hidden flags and progress are kept; edits to default tasks are replaced).
 
 ## Tests
 

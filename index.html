@@ -12,6 +12,10 @@
 <body>
   <header class="topbar">
     <h1>AION 2 <span>Daily Tracker</span></h1>
+    <nav class="tabs" aria-label="Views">
+      <button id="tabTracker" class="tab active" type="button">Tracker</button>
+      <button id="tabMap" class="tab" type="button">Map</button>
+    </nav>
     <div class="topbar-actions">
       <button id="resBtn" class="icon-btn" type="button" aria-label="Resources" title="Resources">📚</button>
       <button id="themeBtn" class="icon-btn" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">🌙</button>
@@ -19,7 +23,7 @@
     </div>
   </header>
 
-  <main class="wrap">
+  <main class="wrap" id="trackerView">
     <section class="card charbar" aria-label="Character">
       <label for="charSelect">Character</label>
       <select id="charSelect"></select>
@@ -40,6 +44,10 @@
       <div class="prog">
         <div class="prog-head"><span>Weekly</span><strong id="weeklyTxt"></strong></div>
         <div class="bar weekly"><div id="weeklyBar"></div></div>
+      </div>
+      <div class="prog">
+        <div class="prog-head"><span>Progression (one-time)</span><strong id="onceTxt"></strong></div>
+        <div class="bar once"><div id="onceBar"></div></div>
       </div>
       <div id="catChips" class="chips" aria-label="Progress by category"></div>
     </section>
@@ -65,6 +73,19 @@
     </footer>
   </main>
 
+  <main class="wrap mapwrap" id="mapView" hidden>
+    <section class="card">
+      <div class="mapbar">
+        <label for="mapSel">Map</label>
+        <select id="mapSel"></select>
+        <a id="mapOpen" class="btn" target="_blank" rel="noopener noreferrer">Open in new tab &#8599;</a>
+      </div>
+      <p id="mapNote" class="note"></p>
+    </section>
+    <div id="mapFrameWrap" class="mapframe"></div>
+    <p class="foot">Maps are third-party sites shown in a frame, not copied. All map data and artwork belong to their owners.</p>
+  </main>
+
   <dialog id="taskDlg">
     <form method="dialog" id="taskForm" class="form">
       <h2 id="taskDlgTitle">Task</h2>
@@ -75,10 +96,17 @@
       <div class="row2">
         <label>Category <input name="category" list="catList" required maxlength="60"></label>
         <label>Resets
-          <select name="resetType"><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
+          <select name="resetType"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="once">One-time</option></select>
         </label>
       </div>
-      <label>Extra links (guides, videos, articles; one per line as <code>Label | URL</code> or just a URL)
+      <label>Limit is
+        <select name="scope"><option value="character">Per character</option><option value="server">Per server (shared by all characters)</option></select>
+      </label>
+      <label>How to complete (one step per line)
+        <textarea name="steps" rows="4" placeholder="Step 1&#10;Step 2"></textarea></label>
+      <label>Video guides (YouTube links are embedded; one per line as <code>Label | URL</code> or just a URL)
+        <textarea name="videos" rows="3" placeholder="My video | https://www.youtube.com/watch?v=..."></textarea></label>
+      <label>More guide links (articles, wikis; one per line as <code>Label | URL</code> or just a URL)
         <textarea name="links" rows="3" placeholder="My YouTube guide | https://youtube.com/watch?v=..."></textarea></label>
       <label>Source (optional note) <input name="source" maxlength="300"></label>
       <label class="check"><input name="verified" type="checkbox"> Verified against a source</label>
@@ -128,7 +156,7 @@
       </div>
       <label>Timezone <select id="sTz"></select></label>
       <p class="note warnbox" id="sNote"></p>
-      <button type="button" class="btn" id="sUseCommunity">Use 07:00 UTC (community-reported)</button>
+      <button type="button" class="btn" id="sUseCommunity">Apply confirmed reset (10:00 KSA = 07:00 UTC)</button>
       <label class="check"><input id="sConfirmed" type="checkbox"> I confirmed this reset time in-game (hides the placeholder warning)</label>
       <hr>
       <h3>Data</h3>

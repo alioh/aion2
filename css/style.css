@@ -129,3 +129,27 @@ dialog::backdrop { background: rgba(0,0,0,.6); }
 .reslist li { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
 .reslist a { color: var(--accent2); overflow-wrap: anywhere; min-width: 0; }
 code { background: var(--surface2); padding: 0 4px; border-radius: 4px; }
+
+.tabs { display: flex; gap: 4px; }
+.tab { font: inherit; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 6px 12px; cursor: pointer; min-height: 36px; }
+.tab.active { color: var(--text); background: var(--surface2); border-color: var(--border); }
+.bar.once > div { background: var(--warn); }
+.steps, .vids-wrap { margin-top: 8px; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; background: var(--surface2); }
+.steps summary, .vids-wrap summary { cursor: pointer; font-size: .88rem; }
+.steps ol { margin: 8px 0 4px; padding-left: 20px; display: grid; gap: 6px; font-size: .9rem; }
+.carousel { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.vids { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; flex: 1; min-width: 0; padding-bottom: 4px; }
+.vid { flex: 0 0 100%; scroll-snap-align: start; margin: 0; }
+.vid iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 8px; background: #000; display: block; }
+.vid figcaption { font-size: .8rem; color: var(--muted); margin-top: 4px; overflow-wrap: anywhere; }
+.vid figcaption a { color: var(--accent2); }
+.vid-link { display: grid; place-items: center; aspect-ratio: 16 / 9; border: 1px dashed var(--border); border-radius: 8px; color: var(--accent2); text-decoration: none; }
+.car { flex: none; width: 34px; padding: 0; font-size: 1.2rem; }
+.mapwrap { max-width: 1200px; }
+.mapbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.mapbar select { flex: 1 1 200px; min-width: 0; }
+.mapframe { height: calc(100dvh - 230px); min-height: 360px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+.mapframe iframe { width: 100%; height: 100%; border: 0; display: block; }
+.topbar { gap: 8px; flex-wrap: wrap; }
+[hidden] { display: none !important; }
+@media (max-width: 520px) { .topbar h1 span { display: none; } }

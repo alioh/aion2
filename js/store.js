@@ -4,7 +4,9 @@
 
   const STORAGE_KEY = 'aion2-daily-tracker-v1';
   const VERSION = 1;
-  const RESET_TYPES = ['daily', 'weekly'];
+  const RESET_TYPES = ['daily', 'weekly', 'once'];
+  const SCOPES = ['character', 'server'];
+  const SERVER_KEY = '__server'; // completions bucket for tasks shared by all characters
 
   function uid(prefix) {
     return (prefix || 'id') + '-' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
@@ -54,6 +56,24 @@
     return (links || []).map((l) => l.label + ' | ' + l.url).join('\n');
   }
 
+  /** YouTube video id from watch / youtu.be / shorts / embed URLs, else ''. */
+  function youtubeId(url) {
+    try {
+      const u = new URL(url);
+      const host = u.hostname.replace(/^www\./, '');
+      let id = '';
+      if (host === 'youtu.be') id = u.pathname.slice(1).split('/')[0];
+      else if (/(^|\.)youtube(-nocookie)?\.com$/.test(host)) {
+        id = u.searchParams.get('v') || (/^\/(shorts|embed|live)\/([^/]+)/.exec(u.pathname) || [])[2] || '';
+      }
+      return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : '';
+    } catch (e) { return ''; }
+  }
+
+  function cleanSteps(v) {
+    return Array.isArray(v) ? v.map((x) => str(x, 400).trim()).filter(Boolean).slice(0, 30) : [];
+  }
+
   function cleanTask(t, custom) {
     return {
       id: str(t.id, 100) || uid('c'),
@@ -65,7 +85,10 @@
       resetType: RESET_TYPES.includes(t.resetType) ? t.resetType : 'daily',
       verified: t.verified === true,
       source: str(t.source, 300),
+      scope: SCOPES.includes(t.scope) ? t.scope : 'character',
+      steps: cleanSteps(t.steps),
       links: cleanLinks(t.links),
+      videos: cleanLinks(t.videos),
       hidden: t.hidden === true,
       custom: custom === undefined ? t.custom === true : custom,
     };
@@ -77,10 +100,12 @@
     const c = { id: uid('ch'), name: 'Character 1' };
     return {
       version: VERSION,
-      settings: { resetTime: '05:00', timezone: 'UTC', weeklyDay: 3, theme: 'dark', resetConfirmed: false },
+      // 07:00 UTC is the confirmed global reset; 10:00 in Asia/Riyadh (KSA, UTC+3) is the same moment.
+      settings: { resetTime: '10:00', timezone: 'Asia/Riyadh', weeklyDay: 3, theme: 'dark', resetConfirmed: true },
       characters: [c],
       activeCharId: c.id,
       tasks: seedTasks(seed),
+      seedRev: 0,
       completions: {},
       resources: cleanLinks(resources, 200),
       ui: { category: 'all', status: 'all', hideCompleted: false },
@@ -102,6 +127,10 @@
       resetConfirmed: rs.resetConfirmed === true,
     };
     try { new Intl.DateTimeFormat('en', { timeZone: settings.timezone }); } catch (e) { settings.timezone = 'UTC'; }
+    // Upgrade the old unconfirmed placeholder (05:00 UTC) to the confirmed 07:00 UTC reset, shown in KSA time.
+    if (!rs.resetConfirmed && settings.resetTime.padStart(5, '0') === '05:00' && settings.timezone === 'UTC') {
+      Object.assign(settings, d.settings, { theme: settings.theme, weeklyDay: settings.weeklyDay });
+    }
 
     const seen = new Set();
     const characters = [];
@@ -119,10 +148,15 @@
     for (const t of raw.tasks) {
       if (!t || typeof t !== 'object') continue;
       const ct = cleanTask(t);
-      // Backups from before links existed: fill default tasks' links from the seed.
-      if (!Array.isArray(t.links) && !ct.custom) {
+      // Backups from before a field existed: fill default tasks from the seed.
+      if (!ct.custom) {
         const sd = seed.find((x) => x.id === ct.id);
-        if (sd) ct.links = cleanLinks(sd.links);
+        if (sd) {
+          if (!Array.isArray(t.links)) ct.links = cleanLinks(sd.links);
+          if (!Array.isArray(t.videos)) ct.videos = cleanLinks(sd.videos);
+          if (!Array.isArray(t.steps)) ct.steps = cleanSteps(sd.steps);
+          if (!SCOPES.includes(t.scope)) ct.scope = SCOPES.includes(sd.scope) ? sd.scope : 'character';
+        }
       }
       if (tseen.has(ct.id)) continue;
       tseen.add(ct.id);
@@ -131,12 +165,12 @@
 
     const completions = {};
     const rc = raw.completions && typeof raw.completions === 'object' ? raw.completions : {};
-    for (const c of characters) {
-      const m = rc[c.id];
+    for (const id of [...characters.map((c) => c.id), SERVER_KEY]) {
+      const m = rc[id];
       if (!m || typeof m !== 'object') continue;
-      completions[c.id] = {};
+      completions[id] = {};
       for (const tid of Object.keys(m)) {
-        if (typeof m[tid] === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(m[tid])) completions[c.id][tid] = m[tid];
+        if (typeof m[tid] === 'string' && /^(\d{4}-\d{2}-\d{2}|once)$/.test(m[tid])) completions[id][tid] = m[tid];
       }
     }
 
@@ -149,10 +183,31 @@
       hideCompleted: ru.hideCompleted === true,
     };
     const activeCharId = characters.some((c) => c.id === raw.activeCharId) ? raw.activeCharId : characters[0].id;
-    return { version: VERSION, settings, characters, activeCharId, tasks, completions, resources: resList, ui };
+    const seedRev = Number.isInteger(raw.seedRev) ? raw.seedRev : 0;
+    return { version: VERSION, settings, characters, activeCharId, tasks, completions, resources: resList, seedRev, ui };
   }
 
-  const api = { STORAGE_KEY, VERSION, uid, safeUrl, cleanLinks, parseLinks, linksToText, cleanTask, seedTasks, defaultState, normalize };
+  /** When the bundled seed changes (rev bump), refresh default tasks, add new ones and drop retired ones.
+   *  Custom tasks, hidden flags and progress are kept. Edits to default tasks are replaced. */
+  function syncSeed(state, seed, rev, resources) {
+    if (state.seedRev === rev) return state;
+    const fresh = seedTasks(seed);
+    const byId = new Map(fresh.map((t) => [t.id, t]));
+    const have = new Set(state.tasks.map((t) => t.id));
+    const tasks = [];
+    for (const t of state.tasks) {
+      if (t.custom) tasks.push(t);
+      else if (byId.has(t.id)) tasks.push(Object.assign({}, byId.get(t.id), { hidden: t.hidden }));
+    }
+    for (const f of fresh) if (!have.has(f.id)) tasks.push(f);
+    state.tasks = tasks;
+    const urls = new Set(state.resources.map((r) => r.url));
+    state.resources.push(...cleanLinks(resources, 200).filter((r) => !urls.has(r.url)));
+    state.seedRev = rev;
+    return state;
+  }
+
+  const api = { STORAGE_KEY, VERSION, SERVER_KEY, uid, safeUrl, youtubeId, cleanLinks, parseLinks, linksToText, cleanSteps, cleanTask, seedTasks, defaultState, normalize, syncSeed };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.AionStore = api;
 })(typeof window !== 'undefined' ? window : globalThis);
