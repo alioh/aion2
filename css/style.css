@@ -43,6 +43,8 @@ h1, h2, h3 { margin: 0; line-height: 1.2; }
 .reset.wide { grid-column: 1 / -1; }
 .events { display: grid; gap: 4px; margin-top: 4px; }
 .evrow { display: flex; justify-content: space-between; gap: 8px; font-size: .92rem; }
+.dot { display: inline-block; width: .65em; height: .65em; margin-right: 8px; border-radius: 50%; background: #e5484d; box-shadow: 0 0 0 2px rgba(229,72,77,.25); }
+.dot.on { background: #3ecf8e; box-shadow: 0 0 0 2px rgba(62,207,142,.3); }
 .evrow strong { font-size: 1rem; }
 .reset .lbl { color: var(--muted); font-size: .8rem; }
 .reset strong { font-size: 1.35rem; font-variant-numeric: tabular-nums; color: var(--accent); }

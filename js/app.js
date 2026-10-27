@@ -293,7 +293,7 @@
   ];
   function tickEvents(n) {
     const box = $('events');
-    if (!box.children.length) box.replaceChildren(...EVENTS.map((e) => h('div', { class: 'evrow' }, h('span', null, e.name), h('strong', { id: 'ev-' + e.name.replace(/\W/g, '') }))));
+    if (!box.children.length) box.replaceChildren(...EVENTS.map((e) => h('div', { class: 'evrow' }, h('span', null, h('i', { class: 'dot', id: 'dot-' + e.name.replace(/\W/g, '') }), e.name), h('strong', { id: 'ev-' + e.name.replace(/\W/g, '') }))));
     const sp = T.partsIn(n, state.settings.serverTz), MIN = 60000, DAY = 1440 * MIN;
     const dayMs = (sp.h * 3600 + sp.mi * 60 + sp.s) * 1000;
     for (const e of EVENTS) {
@@ -303,9 +303,12 @@
         if (since < dur * MIN) left = Math.max(left, dur * MIN - since);
         wait = Math.min(wait, (((s * MIN - dayMs) % DAY) + DAY) % DAY || DAY);
       }
-      $('ev-' + e.name.replace(/\W/g, '')).textContent = left
-        ? 'Open now, ' + T.formatCountdown(left).replace(/^00:/, '') + ' left'
-        : T.formatCountdown(wait).replace(/^00:/, '');
+      const id = e.name.replace(/\W/g, ''), dot = $('dot-' + id);
+      $('ev-' + id).textContent = T.formatCountdown(left || wait).replace(/^00:/, '');
+      dot.className = 'dot ' + (left ? 'on' : 'off');
+      dot.title = left ? 'Open, time left' : 'Closed, time until it opens';
+      dot.setAttribute('role', 'img');
+      dot.setAttribute('aria-label', dot.title);
     }
   }
 
