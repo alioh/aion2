@@ -282,14 +282,14 @@
   }
 
   // ---------- recurring events ----------
-  // Start times are on the server region's own clock (shugo.gg, not an official NCSoft schedule), so they are unverified.
-  const EVERY = (from, step) => { const a = []; for (let h = from; h < 24; h += step) a.push(h * 60); return a; };
+  // Windows are [start minute of day, length in minutes] on the server region's own clock (source: shugo.gg/timers).
+  const EVERY = (from, step, dur, off = 0) => { const a = []; for (let h = from; h < 24; h += step) a.push([h * 60 + off, dur]); return a; };
   const EVENTS = [
-    { name: 'Spacetime Rift', starts: EVERY(2, 3), dur: 10 },
-    { name: 'Shugo Festival', starts: EVERY(0, 1), dur: 10 },
-    { name: 'Dimensional Invasion', starts: EVERY(0, 1).map((m) => m + 30), dur: 15 },
-    { name: 'Battlefield', starts: [11 * 60, 19 * 60], dur: 120 },
-    { name: 'Watcher Kaira', starts: EVERY(1, 3), dur: 30 },
+    { name: 'Spacetime Rift', win: EVERY(2, 3, 10) },
+    { name: 'Shugo Festival', win: EVERY(0, 1, 10) },
+    { name: 'Dimensional Invasion', win: EVERY(0, 1, 15, 30) },
+    { name: 'Battlefield', win: [[11 * 60, 180], [19 * 60, 120]] },   // matchmaking windows 11:00-14:00 and 19:00-21:00
+    { name: 'Watcher Kaira', win: EVERY(1, 3, 30) },
   ];
   function tickEvents(n) {
     const box = $('events');
@@ -297,14 +297,15 @@
     const sp = T.partsIn(n, state.settings.serverTz), MIN = 60000, DAY = 1440 * MIN;
     const dayMs = (sp.h * 3600 + sp.mi * 60 + sp.s) * 1000;
     for (const e of EVENTS) {
-      let since = Infinity, wait = Infinity;
-      for (const s of e.starts) {
-        since = Math.min(since, (((dayMs - s * MIN) % DAY) + DAY) % DAY);
-        wait = Math.min(wait, (((s * MIN - dayMs) % DAY) + DAY) % DAY);
+      let left = 0, wait = Infinity;
+      for (const [s, dur] of e.win) {
+        const since = (((dayMs - s * MIN) % DAY) + DAY) % DAY;
+        if (since < dur * MIN) left = Math.max(left, dur * MIN - since);
+        wait = Math.min(wait, (((s * MIN - dayMs) % DAY) + DAY) % DAY || DAY);
       }
-      $('ev-' + e.name.replace(/\W/g, '')).textContent = since < e.dur * MIN
-        ? 'Open now, ' + T.formatCountdown(e.dur * MIN - since).replace(/^00:/, '') + ' left'
-        : T.formatCountdown(wait || DAY).replace(/^00:/, '');
+      $('ev-' + e.name.replace(/\W/g, '')).textContent = left
+        ? 'Open now, ' + T.formatCountdown(left).replace(/^00:/, '') + ' left'
+        : T.formatCountdown(wait).replace(/^00:/, '');
     }
   }
 
