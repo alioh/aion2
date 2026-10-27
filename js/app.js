@@ -285,6 +285,7 @@
   let lastKeys = '';
   function tick() {
     const n = nowMs();
+    $('serverTime').textContent = new Date(n).toISOString().slice(11, 19);
     $('dailyCd').textContent = T.formatCountdown(T.nextReset('daily', n, cfg()) - n);
     $('weeklyCd').textContent = T.formatCountdown(T.nextReset('weekly', n, cfg()) - n);
     const k = key('daily') + '|' + key('weekly');
