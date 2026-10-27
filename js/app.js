@@ -286,6 +286,11 @@
   function tick() {
     const n = nowMs();
     $('serverTime').textContent = new Date(n).toISOString().slice(11, 19);
+    // Rifts open every 3 h at 02:00, 05:00 ... 23:00 UTC (player-observed) and stay open ~10 min.
+    const H = 3600000, since = (n - 2 * H) % (3 * H), rift = $('riftCd');
+    rift.textContent = since < 10 * 60000
+      ? 'Open now, ' + T.formatCountdown(10 * 60000 - since).slice(3) + ' left'
+      : T.formatCountdown(3 * H - since);
     $('dailyCd').textContent = T.formatCountdown(T.nextReset('daily', n, cfg()) - n);
     $('weeklyCd').textContent = T.formatCountdown(T.nextReset('weekly', n, cfg()) - n);
     const k = key('daily') + '|' + key('weekly');
