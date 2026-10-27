@@ -23,6 +23,25 @@
   }
 
   /** Small coloured icon for a map layer id (own drawings from maps.js). */
+  /** Your own icon for a task: icons/<task-id>.png (also .svg .webp .jpg), or icons/<title-slug>.png for custom tasks.
+   *  Falls back to the map-layer icon, or nothing, when no file exists. */
+  const ICON_EXT = ['png', 'svg', 'webp', 'jpg'];
+  const slug = (t) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  function taskIcon(task, fallback) {
+    const names = [...new Set([task.id, slug(task.title)])].filter(Boolean);
+    const urls = names.flatMap((n) => ICON_EXT.map((x) => 'icons/' + n + '.' + x));
+    const wrap = h('span', { class: 'ticon', 'aria-hidden': 'true' });
+    let i = 0;
+    const img = h('img', { alt: '', width: '22', height: '22', loading: 'lazy' });
+    img.addEventListener('error', () => {
+      if (++i < urls.length) img.src = urls[i];
+      else { img.remove(); if (fallback) wrap.append(fallback); }
+    });
+    img.src = urls[0];
+    wrap.append(img);
+    return wrap;
+  }
+
   function iconEl(id) {
     const el = h('span', { class: 'mapicon', 'aria-hidden': 'true' });
     el.innerHTML = window.AionMaps.iconSvg(id); // static trusted markup, never user input
@@ -177,6 +196,16 @@
       h('button', { class: 'btn sm', type: 'button', onclick: () => { task.hidden = !task.hidden; save(); render(); } }, task.hidden ? 'Unhide' : 'Hide'),
       h('button', { class: 'btn sm danger', type: 'button', onclick: () => delTask(task) }, 'Delete'));
 
+    const grip = h('button', { class: 'grip', type: 'button', title: 'Drag to reorder (or use the up/down arrow keys)', 'aria-label': 'Reorder "' + task.title + '"' }, '⋮⋮');
+    grip.addEventListener('pointerdown', (e) => startDrag(e, task));
+    grip.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+      e.preventDefault();
+      move(task, e.key === 'ArrowUp' ? -1 : 1);
+      const g = document.querySelector('.task[data-id="' + task.id + '"] .grip');
+      if (g) g.focus();
+    });
+
     const isOpen = manage || openIds.has(task.id); // manage mode shows everything so the tools are reachable
     const body = h('div', { class: 'tbody', hidden: !isOpen },
       task.description && h('p', { class: 'desc' }, task.description),
@@ -186,9 +215,9 @@
       stepsSection(task),
       videoSection(task));
     const toggle = h('button', { class: 'ttitle', type: 'button', 'aria-expanded': String(isOpen) },
-      h('span', { class: 'chev', 'aria-hidden': 'true' }, '▶'), layer && iconEl(layer.id), h('span', { class: 'ttext' }, task.title));
+      h('span', { class: 'chev', 'aria-hidden': 'true' }, '▶'), taskIcon(task, layer && iconEl(layer.id)), h('span', { class: 'ttext' }, task.title));
     const card = h('article', { class: 'task' + (isOpen ? ' open' : '') + (done ? ' done' : '') + (task.hidden ? ' is-hidden' : ''), 'data-id': task.id, 'data-idx': idx },
-      h('div', { class: 'thead' }, h('label', { class: 'tick' }, check), toggle, badges), body);
+      h('div', { class: 'thead' }, grip, h('label', { class: 'tick' }, check), toggle, badges), body);
     toggle.addEventListener('click', () => {
       const open = !card.classList.contains('open');
       card.classList.toggle('open', open);
@@ -299,6 +328,45 @@
   }
 
   // ---------- task management ----------
+  /** Drag a task by its grip to a new place inside its own group (daily / weekly / one-time). Works with mouse, pen and touch. */
+  function startDrag(e, task) {
+    if (e.button > 0) return;
+    e.preventDefault();
+    const grip = e.currentTarget, card = grip.closest('.task');
+    let target = null, after = false;
+    grip.setPointerCapture(e.pointerId);
+    card.classList.add('dragging');
+    const clear = () => document.querySelectorAll('.drop-before, .drop-after').forEach((n) => n.classList.remove('drop-before', 'drop-after'));
+    function onMove(ev) {
+      if (ev.clientY < 70) window.scrollBy(0, -14); else if (ev.clientY > window.innerHeight - 70) window.scrollBy(0, 14);
+      clear(); target = null;
+      const over = document.elementFromPoint(ev.clientX, ev.clientY);
+      const el = over && over.closest('.task[data-id]');
+      if (!el || el === card) return;
+      const t = state.tasks.find((x) => x.id === el.dataset.id);
+      if (!t || t.resetType !== task.resetType) return;
+      const r = el.getBoundingClientRect();
+      after = ev.clientY > r.top + r.height / 2;
+      target = t;
+      el.classList.add(after ? 'drop-after' : 'drop-before');
+    }
+    function end(commit) {
+      grip.removeEventListener('pointermove', onMove);
+      grip.removeEventListener('pointerup', onUp);
+      grip.removeEventListener('pointercancel', onCancel);
+      card.classList.remove('dragging'); clear();
+      if (!commit || !target) return;
+      state.tasks = state.tasks.filter((x) => x !== task);
+      const at = state.tasks.indexOf(target);
+      state.tasks.splice(after ? at + 1 : at, 0, task);
+      save(); render();
+    }
+    const onUp = (ev) => { onMove(ev); end(true); }, onCancel = () => end(false);   // final position counts even if no move event fired
+    grip.addEventListener('pointermove', onMove);
+    grip.addEventListener('pointerup', onUp);
+    grip.addEventListener('pointercancel', onCancel);
+  }
+
   function move(task, dir) {
     const same = state.tasks.filter((t) => t.resetType === task.resetType);
     const other = same[same.indexOf(task) + dir];

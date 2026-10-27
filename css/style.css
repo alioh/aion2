@@ -103,10 +103,16 @@ textarea { resize: vertical; }
 .tbody { padding: 0 12px 12px 54px; }
 @media (max-width: 520px) {
   .thead { flex-wrap: wrap; row-gap: 2px; }
-  .thead .badges { flex-basis: 100%; max-width: none; justify-content: flex-start; padding-left: 38px; }
+  .thead .badges { flex-basis: 100%; max-width: none; justify-content: flex-start; padding-left: 66px; }
   .tbody { padding-left: 12px; }
 }
 .task.is-hidden { border-style: dashed; opacity: .55; }
+.grip { flex: none; width: 18px; padding: 4px 0; background: none; border: 0; color: var(--muted); font-size: .9rem; line-height: 1; letter-spacing: -2px; cursor: grab; touch-action: none; user-select: none; opacity: .7; }
+.grip:hover, .grip:focus-visible { color: var(--accent); opacity: 1; }
+.task.dragging { opacity: .45; }
+.task.dragging .grip { cursor: grabbing; }
+.task.drop-before { box-shadow: 0 -3px 0 0 var(--accent); }
+.task.drop-after { box-shadow: 0 3px 0 0 var(--accent); }
 .tick { display: grid; place-items: center; width: 28px; flex: none; cursor: pointer; }
 .tick input { width: 26px; height: 26px; min-height: 0; accent-color: var(--accent); cursor: pointer; }
 .body { min-width: 0; flex: 1; }
@@ -190,3 +196,6 @@ code { background: var(--surface2); padding: 0 4px; border-radius: 4px; }
 .chip.pick { cursor: pointer; color: var(--text); font: inherit; font-size: .85rem; }
 .chip.pick:hover { border-color: var(--accent); }
 .chip.pick.other { opacity: .7; }
+
+.ticon { display: inline-flex; align-items: center; flex: none; }
+.ticon img { width: 22px; height: 22px; object-fit: contain; border-radius: 4px; }
