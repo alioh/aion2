@@ -15,7 +15,7 @@
   const H = 'https://aion2hub.com/database/';
   const yt = (id, label) => ({ label, url: 'https://www.youtube.com/watch?v=' + id });
 
-  const SEED_REV = 4;
+  const SEED_REV = 5;
 
   const SEED_TASKS = [
     // ---- Daily ----
@@ -40,7 +40,7 @@
     { id: 'shugo-festival', title: 'Shugo Festival reward keys', category: 'Events', resetType: 'daily', scope: 'server', verified: true,
       description: 'You get 3 Shugo Festival Reward Keys every day at the daily reset (07:00 UTC). They stop at 12 (21 with membership), so spend them before they cap. Shared across your characters on the server.',
       location: 'Shugo Festival', guideUrl: A + 'daily-and-weekly/', source: 'U (3 keys/day at reset), A, M; MM said 2/day',
-      links: [{ label: 'metabot.gg events', url: M + 'events' }], videos: [yt('2Xw7aF3SlgQ', 'MistaWigglez: AION 2 Jump Jump Guide, Shugo Festival tips')] },
+      links: [{ label: 'metabot.gg events', url: M + 'events' }], videos: [yt('2Xw7aF3SlgQ', 'MistaWigglez: AION 2 Jump Jump Guide, Shugo Festival tips'), yt('AYFt7XcbQTs', 'MistaWigglez: AION 2 Shugo Festival guide')] },
     { id: 'invasion-key', title: 'Dimensional Invasion reward key', category: 'Events', resetType: 'daily', scope: 'server', verified: true,
       description: 'You get 1 Dimensional Invasion reward key per day (stores up to 7), shared across your characters. An invasion can start at :30 of some hours: press Enter on the button beside the minimap within its 3-minute countdown to join the 6-player map.',
       location: 'Dimensional Invasion (random event)', guideUrl: A + 'daily-and-weekly/', source: 'A, M, MM', links: [], videos: [] },
@@ -120,7 +120,7 @@
         { label: 'aion2hub: Monoliths database', url: H + 'monoliths' },
         { label: 'Gamers4Life: World objects', url: 'https://gamers4.life/aion-2/database/en/world-objects/' },
       ],
-      videos: [yt('zaTPBotP5ZI', 'Aragon: Ultimate progression guide, 12 steps to the endgame raid'), yt('u5PM7x0KzZk', 'jenny plays games: What to do at level 45')] },
+      videos: [yt('zaTPBotP5ZI', 'Aragon: Ultimate progression guide, 12 steps to the endgame raid'), yt('u5PM7x0KzZk', 'jenny plays games: What to do at level 45'), yt('2jJOXpWb0AU', 'MistaWigglez: AION 2 Empyrean Traces full guide')] },
     { id: 'crafting-start', mapLayer: 'blacksmithing', title: 'Crafting: start and level up', category: 'Crafting', resetType: 'once', scope: 'character', verified: true,
       description: 'Pick one of five professions (Blacksmithing, Armorsmithing, Handicrafting, Alchemy, Cooking), level it to 50, do its promotion quest, then craft gear. Crafted gear binds to the crafter, so craft for the character who will wear it.',
       location: 'Crafting menu (Alt + G); Crafting Table in a town', guideUrl: A + 'crafting/', source: 'A, K',
@@ -165,6 +165,19 @@
     { label: 'MistaWigglez: Fastest ways to max Kina in AION 2 (YouTube)', url: 'https://www.youtube.com/watch?v=hif_HtC-YqA' },
     { label: 'MistaWigglez: AION 2 Power Shards Explained (YouTube)', url: 'https://www.youtube.com/watch?v=N3HCdnj6HwA' },
     { label: 'MistaWigglez: AION 2 Daevanion Guide (YouTube)', url: 'https://www.youtube.com/watch?v=LWv2c7N_oxA' },
+    { label: 'MistaWigglez playlist: AION 2 Beginner Guides', url: 'https://www.youtube.com/playlist?list=PLJ7Y6xbdQq5o' },
+    { label: 'MistaWigglez playlist: AION 2 Videos (all)', url: 'https://www.youtube.com/playlist?list=PLd61oUYBORJM' },
+    { label: 'MistaWigglez playlist: AION 2 Customization Guides', url: 'https://www.youtube.com/playlist?list=PLXELoiCX-C10' },
+    { label: 'MistaWigglez: How to hit max level fast, leveling guide (YouTube)', url: 'https://www.youtube.com/watch?v=A0hpQaWDYgs' },
+    { label: 'MistaWigglez: 17 mistakes you need to avoid, beginner tips (YouTube)', url: 'https://www.youtube.com/watch?v=82h7MBZVVQk' },
+    { label: 'MistaWigglez: Ascension Gauge explained, how to reach 100% (YouTube)', url: 'https://www.youtube.com/watch?v=nr3jbVduSAg' },
+    { label: 'MistaWigglez: Gear Enhancement guide (YouTube)', url: 'https://www.youtube.com/watch?v=DtgiUo83XnM' },
+    { label: 'MistaWigglez: Inventory and storage guide (YouTube)', url: 'https://www.youtube.com/watch?v=NL2V9vhcElQ' },
+    { label: 'MistaWigglez: How to get more potions (YouTube)', url: 'https://www.youtube.com/watch?v=7UZeyFk08Vk' },
+    { label: 'MistaWigglez: How to unlock new wings (YouTube)', url: 'https://www.youtube.com/watch?v=g-f3CaQGcZ4' },
+    { label: 'MistaWigglez: How to max out pet levels (YouTube)', url: 'https://www.youtube.com/watch?v=YdUqEg5Yzok' },
+    { label: 'MistaWigglez: Connect your Twitch account to claim Twitch Drops (YouTube)', url: 'https://www.youtube.com/watch?v=nBqmp2NCUwU' },
+    { label: 'MistaWigglez: How to redeem coupon codes (YouTube)', url: 'https://www.youtube.com/watch?v=sH92X_NVJ-g' },
     { label: 'aion2maps.com: All guides', url: A + 'all/' },
     { label: 'aion2maps.com: Daily and weekly', url: A + 'daily-and-weekly/' },
     { label: 'aion2maps.com: What to do at 45', url: A + 'what-to-do-at-45/' },
