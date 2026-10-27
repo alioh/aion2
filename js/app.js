@@ -285,9 +285,14 @@
   let lastKeys = '';
   function tick() {
     const n = nowMs();
-    $('serverTime').textContent = new Date(n).toISOString().slice(11, 19);
-    // Rifts open every 3 h at 02:00, 05:00 ... 23:00 UTC (player-observed) and stay open ~10 min.
-    const H = 3600000, since = (n - 2 * H) % (3 * H), rift = $('riftCd');
+    const tz = state.settings.timezone;
+    let st = new Date(n).toISOString().slice(11, 19);
+    if (tz !== 'UTC') {
+      try { st += '  (' + new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }).format(n) + ' ' + tz + ')'; } catch (e) { /* bad tz: show UTC only */ }
+    }
+    $('serverTime').textContent = st;
+    // Rifts open every 3 h at 00:00, 03:00 ... 21:00 UTC (= 02:00, 05:00 ... CEST; player-observed) and stay open ~10 min.
+    const H = 3600000, since = n % (3 * H), rift = $('riftCd');
     rift.textContent = since < 10 * 60000
       ? 'Open now, ' + T.formatCountdown(10 * 60000 - since).slice(3) + ' left'
       : T.formatCountdown(3 * H - since);
@@ -407,7 +412,7 @@
     let list = [];
     try { list = Intl.supportedValuesOf('timeZone'); } catch (e) { /* older browsers */ }
     const local = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    return [...new Set(['UTC', 'Asia/Riyadh', 'Asia/Seoul', local, ...list, state.settings.timezone])];
+    return [...new Set(['UTC', 'Asia/Riyadh', 'Europe/Paris', 'Asia/Seoul', local, ...list, state.settings.timezone])];
   }
 
   function openSettings() {
