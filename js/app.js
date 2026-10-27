@@ -170,17 +170,34 @@
       h('button', { class: 'btn sm', type: 'button', onclick: () => { task.hidden = !task.hidden; save(); render(); } }, task.hidden ? 'Unhide' : 'Hide'),
       h('button', { class: 'btn sm danger', type: 'button', onclick: () => delTask(task) }, 'Delete'));
 
-    return h('article', { class: 'task' + (done ? ' done' : '') + (task.hidden ? ' is-hidden' : ''), 'data-id': task.id, 'data-idx': idx },
-      h('label', { class: 'tick' }, check),
-      h('div', { class: 'body' },
-        h('h3', {}, task.title),
-        badges,
-        task.description && h('p', { class: 'desc' }, task.description),
-        loc,
-        h('div', { class: 'row-actions' }, guide, mapBtn, tools),
-        extra,
-        stepsSection(task),
-        videoSection(task)));
+    const isOpen = manage || openIds.has(task.id); // manage mode shows everything so the tools are reachable
+    const body = h('div', { class: 'tbody', hidden: !isOpen },
+      task.description && h('p', { class: 'desc' }, task.description),
+      loc,
+      h('div', { class: 'row-actions' }, guide, mapBtn, tools),
+      extra,
+      stepsSection(task),
+      videoSection(task));
+    const toggle = h('button', { class: 'ttitle', type: 'button', 'aria-expanded': String(isOpen) },
+      h('span', { class: 'chev', 'aria-hidden': 'true' }, '▶'), h('span', { class: 'ttext' }, task.title));
+    const card = h('article', { class: 'task' + (isOpen ? ' open' : '') + (done ? ' done' : '') + (task.hidden ? ' is-hidden' : ''), 'data-id': task.id, 'data-idx': idx },
+      h('div', { class: 'thead' }, h('label', { class: 'tick' }, check), toggle, badges), body);
+    toggle.addEventListener('click', () => {
+      const open = !card.classList.contains('open');
+      card.classList.toggle('open', open);
+      body.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) openIds.add(task.id); else openIds.delete(task.id);
+      updateToggleAll();
+    });
+    return card;
+  }
+
+  const openIds = new Set(); // expanded cards survive re-renders (ticking a box re-renders the list)
+
+  function updateToggleAll() {
+    const vis = visibleTasks($('manage').checked);
+    $('toggleAll').textContent = vis.length && vis.every((t) => openIds.has(t.id)) ? 'Collapse all' : 'Expand all';
   }
 
   function stepsSection(task) {
@@ -191,7 +208,7 @@
 
   function videoSection(task) {
     if (!task.videos.length) return null;
-    const det = h('details', { class: 'vids-wrap' }, h('summary', {}, '\u25B6 Video guides (' + task.videos.length + ')'));
+    const det = h('details', { class: 'vids-wrap' }, h('summary', {}, 'Video guides (' + task.videos.length + ')'));
     let built = false;
     det.addEventListener('toggle', () => { // build iframes lazily so closed cards load nothing from YouTube
       if (!det.open || built) return;
@@ -229,6 +246,7 @@
       root.append(h('section', { class: 'group' }, h('h2', {}, label), ...g.map((t) => taskCard(t, manage))));
     }
     if (!tasks.length) root.append(h('p', { class: 'empty' }, 'No tasks match. Clear the filters or search.'));
+    updateToggleAll();
   }
 
   /** Describes the reset moment in the display timezone, e.g. "10:00 Asia/Riyadh (07:00 UTC), weekly on Wednesday". */
@@ -531,6 +549,12 @@
   $('mapLayerSel').replaceChildren(h('option', { value: '' }, 'None'), ...M_.LAYERS.map((l) => h('option', { value: l.id }, l.label)));
   document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => b.closest('dialog').close()));
   $('addTask').addEventListener('click', () => openTask(null));
+  $('toggleAll').addEventListener('click', () => {
+    const vis = visibleTasks($('manage').checked);
+    const allOpen = vis.every((t) => openIds.has(t.id));
+    for (const t of vis) { if (allOpen) openIds.delete(t.id); else openIds.add(t.id); }
+    renderList();
+  });
   $('search').addEventListener('input', renderList);
   $('manage').addEventListener('change', renderList);
   $('fCategory').addEventListener('change', (e) => { state.ui.category = e.target.value; save(); renderList(); });

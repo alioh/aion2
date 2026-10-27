@@ -76,11 +76,23 @@ textarea { resize: vertical; }
 
 .group { display: grid; gap: 10px; margin-bottom: 18px; }
 .group h2 { font-size: .85rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 4px 2px; }
-.task { display: flex; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); }
+.task { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
 .task.done { opacity: .6; }
-.task.done h3 { text-decoration: line-through; }
+.task.done .ttext { text-decoration: line-through; }
+.thead { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+.ttitle { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; text-align: left; background: none; border: 0; color: inherit; font: inherit; font-weight: 600; font-size: 1.02rem; cursor: pointer; padding: 4px 0; min-height: 36px; }
+.ttext { min-width: 0; overflow-wrap: anywhere; }
+.chev { flex: none; font-size: .7rem; color: var(--accent); transition: transform .15s; }
+.task.open .chev { transform: rotate(90deg); }
+.thead .badges { margin: 0; flex: none; justify-content: flex-end; max-width: 46%; }
+.tbody { padding: 0 12px 12px 54px; }
+@media (max-width: 520px) {
+  .thead { flex-wrap: wrap; row-gap: 2px; }
+  .thead .badges { flex-basis: 100%; max-width: none; justify-content: flex-start; padding-left: 38px; }
+  .tbody { padding-left: 12px; }
+}
 .task.is-hidden { border-style: dashed; opacity: .55; }
-.tick { display: grid; place-items: start center; width: 32px; flex: none; padding-top: 2px; cursor: pointer; }
+.tick { display: grid; place-items: center; width: 28px; flex: none; cursor: pointer; }
 .tick input { width: 26px; height: 26px; min-height: 0; accent-color: var(--accent); cursor: pointer; }
 .body { min-width: 0; flex: 1; }
 .task h3 { font-size: 1.02rem; }
@@ -116,7 +128,6 @@ dialog::backdrop { background: rgba(0,0,0,.6); }
 @media (max-width: 420px) {
   .row2 { grid-template-columns: 1fr; }
   .reset strong { font-size: 1.15rem; }
-  .task { padding: 10px; gap: 8px; }
 }
 @media (min-width: 700px) {
   .toolbar input[type=search] { flex: 2 1 260px; }

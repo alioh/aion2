@@ -15,7 +15,7 @@
   const H = 'https://aion2hub.com/database/';
   const yt = (id, label) => ({ label, url: 'https://www.youtube.com/watch?v=' + id });
 
-  const SEED_REV = 3;
+  const SEED_REV = 4;
 
   const SEED_TASKS = [
     // ---- Daily ----
@@ -36,11 +36,11 @@
       description: 'Odyle Energy refills 15 every 3 hours (120/day) per character and stops at the cap (560, or 840 with membership), so spend it. Energy pays for the reward cube, not entry: 40 per claim (20 in Krao Cave/Urugugu Canyon Exploration, 30 in Fire Temple Exploration).',
       location: 'Expedition / Conquest dungeons, e.g. Draupnir or Ferocious Horn Den', guideUrl: A + 'expeditions-and-odyle/', source: 'A, M, MM',
       links: [{ label: 'aion2hub: Draupnir', url: H + 'instance/draupnir' }, { label: 'aion2hub: Ferocious Horn Den', url: H + 'instance/ferocious-horn-den' }],
-      videos: [yt('yShlY0zlQNc', 'Madsin: Draupnir Cave guide')] },
+      videos: [yt('yShlY0zlQNc', 'Madsin: Draupnir Cave guide'), yt('FcMN6hw65sU', 'MistaWigglez: AION 2 Odyle Energy Explained')] },
     { id: 'shugo-festival', title: 'Shugo Festival reward keys', category: 'Events', resetType: 'daily', scope: 'server', verified: true,
       description: 'You get 3 Shugo Festival Reward Keys every day at the daily reset (07:00 UTC). They stop at 12 (21 with membership), so spend them before they cap. Shared across your characters on the server.',
       location: 'Shugo Festival', guideUrl: A + 'daily-and-weekly/', source: 'U (3 keys/day at reset), A, M; MM said 2/day',
-      links: [{ label: 'metabot.gg events', url: M + 'events' }], videos: [] },
+      links: [{ label: 'metabot.gg events', url: M + 'events' }], videos: [yt('2Xw7aF3SlgQ', 'MistaWigglez: AION 2 Jump Jump Guide, Shugo Festival tips')] },
     { id: 'invasion-key', title: 'Dimensional Invasion reward key', category: 'Events', resetType: 'daily', scope: 'server', verified: true,
       description: 'You get 1 Dimensional Invasion reward key per day (stores up to 7), shared across your characters. An invasion can start at :30 of some hours: press Enter on the button beside the minimap within its 3-minute countdown to join the 6-player map.',
       location: 'Dimensional Invasion (random event)', guideUrl: A + 'daily-and-weekly/', source: 'A, M, MM', links: [], videos: [] },
@@ -49,7 +49,7 @@
     { id: 'daily-dungeon', title: 'Daily Dungeon (Unknown Fissure)', category: 'Dungeons', resetType: 'weekly', scope: 'server', verified: true,
       description: 'Enter Daeva Bio-Research Base: 14 runs per week (about 2 a day), shared across your characters on the server. It pays Enhance Stones; the top reward tier needs a score of 10,000.',
       location: 'Unknown Fissure: Daeva Bio-Research Base', guideUrl: M + 'dungeons/daeva-bio-research-base', source: 'A, M, MM, K',
-      links: [{ label: 'MeinMMO checklist', url: MM }], videos: [] },
+      links: [{ label: 'MeinMMO checklist', url: MM }], videos: [yt('yptf3C8792k', 'MistaWigglez: AION 2 Daily Dungeons Guide')] },
     { id: 'ascension-trial', title: 'Ascension Trial', category: 'Dungeons', resetType: 'weekly', scope: 'character', verified: true,
       description: 'Solo entries, 3 per week per character, from item level 1,000. Difficulties open at item level 1,000 / 1,500 / 2,000 / 2,500; entering on the last day before the reset puts you in the highest difficulty your item level reached that week.',
       location: 'Nightmare Altar and its sister dungeons', guideUrl: M + 'dungeons/nightmare-altar', source: 'A, M, MM',
@@ -79,13 +79,13 @@
     { id: 'daeva-pass', title: 'Daeva Pass weekly EXP', category: 'Events', resetType: 'weekly', scope: 'character', verified: true,
       description: 'The Daeva Pass is a seasonal battle pass with a free and a premium track, tracked per character (not account-wide). Levelling it pays currency, gear-enhancement materials and Daeva Pass Shop Coins (spend them before the season ends). Season 1 runs 30 Sep to 16 Dec 2026. metabot.gg lists a weekly pass EXP limit of 50,000; confirm the exact figure in game.',
       location: '', guideUrl: A + 'whats-bound/', source: 'U, A (per character, season dates), M (weekly EXP limit, single source)',
-      links: [{ label: 'metabot.gg: Daeva Pass', url: M + 'daeva-pass' }, { label: 'aion2maps: Membership and the shop', url: A + 'membership-and-shop/' }], videos: [] },
+      links: [{ label: 'metabot.gg: Daeva Pass', url: M + 'daeva-pass' }, { label: 'aion2maps: Membership and the shop', url: A + 'membership-and-shop/' }], videos: [yt('R0gWF-F-aq8', 'MistaWigglez: Is AION 2 Membership and Pass worth it?')] },
     { id: 'commands', title: 'Commands (weekly quests)', category: 'Quests', resetType: 'weekly', scope: 'server', verified: true,
       description: 'Buy and complete weekly Commands: up to 12 from the Command Merchant in your capital (15,000 Kina each) and up to 20 from the Lower Abyss. The limits are per server, shared by your characters.',
       location: 'Command Merchant in your capital; Lower Abyss', guideUrl: A + 'daily-and-weekly/', source: 'A, MM', links: [{ label: 'MeinMMO checklist', url: MM }], videos: [] },
     { id: 'substance-morph', mapLayer: 'odyle', title: 'Substance Morph (Odyle Energy)', category: 'Crafting', resetType: 'weekly', scope: 'character', verified: true,
       description: 'Craft Odyle Energy: two recipes, 40 energy each, from gathered Odyle and 50,000 Kina. Limit 4 per character plus 16 per server each week (up to 20 on your main). Unlocks at level 10.',
-      location: 'Crafting menu', guideUrl: A + 'daily-and-weekly/', source: 'A, MM', links: [{ label: 'MeinMMO checklist', url: MM }], videos: [] },
+      location: 'Crafting menu', guideUrl: A + 'daily-and-weekly/', source: 'A, MM', links: [{ label: 'MeinMMO checklist', url: MM }], videos: [yt('FcMN6hw65sU', 'MistaWigglez: AION 2 Odyle Energy Explained')] },
 
     // ---- One-time / ongoing progression (never reset) ----
     { id: 'strongholds', mapLayer: 'stronghold', title: 'Clear your region\'s Strongholds', category: 'Progression', resetType: 'once', scope: 'character', verified: true,
@@ -102,7 +102,7 @@
         { label: 'Interactive map: Verteron strongholds', url: 'https://interactivemap.app/aion2/maps/verteron/stronghold' },
         { label: 'KeenGamer leveling guide', url: 'https://www.keengamer.com/articles/guides/aion-2-leveling-progression-guide-level-1-to-endgame/' },
       ],
-      videos: [yt('zaTPBotP5ZI', 'Aragon: Ultimate progression guide, 12 steps to the endgame raid'), yt('u5PM7x0KzZk', 'jenny plays games: What to do at level 45')] },
+      videos: [yt('zaTPBotP5ZI', 'Aragon: Ultimate progression guide, 12 steps to the endgame raid'), yt('u5PM7x0KzZk', 'jenny plays games: What to do at level 45'), yt('1zcLpHN84q0', 'MistaWigglez: AION 2 Strongholds Explained')] },
     { id: 'monolith', mapLayer: 'empyrean-trace', title: 'Monolith: Empyrean Traces', category: 'Progression', resetType: 'once', scope: 'server', verified: true,
       description: 'Collect Empyrean Traces and turn them in at your region\'s Monolith. Each Monolith level gives an amulet enhance scroll (30 in all): 80 Traces reach level 10, 255 reach level 20, 560 reach level 30. Do it on one character; levels sync across your characters on the server.',
       location: 'Monoliths near the Dawn Legion Base / Zumion Village (Verteron) or Safe Haven / Nornir Assembly (Altgard) statues', guideUrl: A + 'what-to-do-at-45/', source: 'A, K, allthings.how (level sync is an Asian-release rule)',
@@ -137,7 +137,7 @@
         { label: 'Gamers4Life: Crafting calculator', url: 'https://gamers4.life/aion-2/database/en/crafting-calculator/' },
         { label: 'aion2hub: Crafting calculator', url: 'https://aion2hub.com/tools/crafting-calculator' },
       ],
-      videos: [yt('hTdSVmtl00U', 'aLuckyRO: Drop or craft gear? Gear progression for Global beginners'), yt('xwrSp65-Cig', 'Deathweaver: the five professions and the Market (Portuguese)')] },
+      videos: [yt('hTdSVmtl00U', 'aLuckyRO: Drop or craft gear? Gear progression for Global beginners'), yt('xwrSp65-Cig', 'Deathweaver: the five professions and the Market (Portuguese)'), yt('95JFX0rtf3w', 'MistaWigglez: How to Craft in AION 2, complete crafting guide')] },
     { id: 'gathering-start', mapLayer: 'orichalcum-ore', title: 'Gathering (Essence Extraction)', category: 'Crafting', resetType: 'once', scope: 'character', verified: true,
       description: 'Gathering opens at level 10 and has no daily cap. Nodes give ore, gems, logs, herbs, cooking ingredients and Odyle (Odyle only in flight). Each node allows 3 attempts, then disappears. You can max two gathering specialties.',
       location: 'Open-world gathering nodes', guideUrl: A + 'crafting/', source: 'A, K',
@@ -153,11 +153,18 @@
         { label: 'Interactive map: Verteron gathering (Orichalcum Ore)', url: 'https://interactivemap.app/aion2/maps/verteron/orihalum-ore' },
         { label: 'KeenGamer crafting guide', url: 'https://www.keengamer.com/articles/guides/aion-2-crafting-guide-professions-gear-materials/' },
       ],
-      videos: [yt('xwrSp65-Cig', 'Deathweaver: the five professions and the Market (Portuguese)')] },
+      videos: [yt('xwrSp65-Cig', 'Deathweaver: the five professions and the Market (Portuguese)'), yt('J6AUJdR8NLU', 'MistaWigglez: How to Gather in AION 2 (Essence Extraction)')] },
   ];
 
   // General reference library (editable in the app under "Resources").
   const SEED_RESOURCES = [
+    { label: 'MistaWigglez (YouTube channel, many AION 2 guides)', url: 'https://www.youtube.com/@MistaWigglez/videos' },
+    { label: 'MistaWigglez: How to find Hidden Cubes in AION 2 (YouTube)', url: 'https://www.youtube.com/watch?v=p8_rnAHnsFg' },
+    { label: 'MistaWigglez: AION 2 Sealed Dungeons Explained (YouTube)', url: 'https://www.youtube.com/watch?v=hXOoIAa-xio' },
+    { label: 'MistaWigglez: AION 2 Draupnir Episode Quest Guide (YouTube)', url: 'https://www.youtube.com/watch?v=lcT54hJhZYY' },
+    { label: 'MistaWigglez: Fastest ways to max Kina in AION 2 (YouTube)', url: 'https://www.youtube.com/watch?v=hif_HtC-YqA' },
+    { label: 'MistaWigglez: AION 2 Power Shards Explained (YouTube)', url: 'https://www.youtube.com/watch?v=N3HCdnj6HwA' },
+    { label: 'MistaWigglez: AION 2 Daevanion Guide (YouTube)', url: 'https://www.youtube.com/watch?v=LWv2c7N_oxA' },
     { label: 'aion2maps.com: All guides', url: A + 'all/' },
     { label: 'aion2maps.com: Daily and weekly', url: A + 'daily-and-weekly/' },
     { label: 'aion2maps.com: What to do at 45', url: A + 'what-to-do-at-45/' },
