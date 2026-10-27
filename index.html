@@ -7,12 +7,16 @@
   <meta name="description" content="Personal daily and weekly task tracker for AION 2, per character. Unofficial fan tool.">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a2f45'/%3E%3Cpath d='M9 17l5 5 9-12' fill='none' stroke='%237ee0c3' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css?v=13">
+  <link rel="stylesheet" href="css/style.css?v=14">
 </head>
 <body>
   <header class="topbar">
     <h1>AION 2 <span>Daily Tracker</span></h1>
-    <div class="srvclock" title="Server time"><span class="sep" aria-hidden="true"></span><span class="lbl" id="serverLbl">Server</span><strong id="serverTime">--:--:--</strong></div>
+    <div class="srvclock">
+      <span class="sep" aria-hidden="true"></span><span class="lbl">Server time <span id="serverLbl"></span></span><strong id="serverTime">--:--:--</strong>
+      <span class="sep" aria-hidden="true"></span><span class="lbl">Daily reset in</span><strong id="dailyCd">--:--:--</strong>
+      <span class="sep" aria-hidden="true"></span><span class="lbl">Weekly reset in</span><strong id="weeklyCd">--</strong>
+    </div>
     <nav class="tabs" aria-label="Views">
       <button id="tabTracker" class="tab active" type="button">Tracker</button>
       <button id="tabMap" class="tab" type="button">Map</button>
@@ -32,9 +36,8 @@
     </section>
 
     <section class="card resets" aria-label="Reset timers">
-      <div class="reset"><span class="lbl">Daily reset in</span><strong id="dailyCd">--:--:--</strong></div>
-      <div class="reset"><span class="lbl">Weekly reset in</span><strong id="weeklyCd">--</strong></div>
-      <div class="reset wide"><span class="lbl">Events on server clock <a href="https://shugo.gg/timers" target="_blank" rel="noopener" title="Event times from shugo.gg" aria-label="Event times from shugo.gg (opens in a new tab)">shugo.gg ↗</a></span><div id="events" class="events"></div></div>
+      <div class="reset wide"><span class="lbl">Events on server clock <a href="https://shugo.gg/timers" target="_blank" rel="noopener" title="Event times from shugo.gg" aria-label="Event times from shugo.gg (opens in a new tab)">shugo.gg ↗</a></span><div id="events" class="events"></div>
+        <p class="note legend"><i class="dot off"></i>Closed: green time = opens in &nbsp; <i class="dot on"></i>Open: red time = closes in (time left)</p></div>
       <p id="resetNote" class="note"></p>
     </section>
 
@@ -197,10 +200,10 @@
     </div>
   </dialog>
 
-  <script src="js/seed.js?v=13"></script>
-  <script src="js/time.js?v=13"></script>
-  <script src="js/store.js?v=13"></script>
-  <script src="js/maps.js?v=13"></script>
-  <script src="js/app.js?v=13"></script>
+  <script src="js/seed.js?v=14"></script>
+  <script src="js/time.js?v=14"></script>
+  <script src="js/store.js?v=14"></script>
+  <script src="js/maps.js?v=14"></script>
+  <script src="js/app.js?v=14"></script>
 </body>
 </html>

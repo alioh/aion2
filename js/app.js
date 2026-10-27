@@ -306,6 +306,7 @@
       const id = e.name.replace(/\W/g, ''), dot = $('dot-' + id);
       $('ev-' + id).textContent = T.formatCountdown(left || wait).replace(/^00:/, '');
       dot.className = 'dot ' + (left ? 'on' : 'off');
+      $('ev-' + id).className = left ? 'closes' : '';
       dot.title = left ? 'Open, time left' : 'Closed, time until it opens';
       dot.setAttribute('role', 'img');
       dot.setAttribute('aria-label', dot.title);

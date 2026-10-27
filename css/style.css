@@ -26,7 +26,7 @@ h1, h2, h3 { margin: 0; line-height: 1.2; }
 }
 .topbar h1 { font-size: 1.1rem; letter-spacing: .02em; }
 .topbar h1 span { color: var(--accent); }
-.srvclock { display: flex; align-items: center; gap: 8px; margin-right: auto; }
+.srvclock { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-right: auto; }
 .srvclock .sep { width: 1px; height: 1.2em; background: var(--border, currentColor); opacity: .5; }
 .srvclock .lbl { color: var(--muted); font-size: .8rem; }
 .srvclock strong { color: var(--accent); font-variant-numeric: tabular-nums; }
@@ -45,6 +45,9 @@ h1, h2, h3 { margin: 0; line-height: 1.2; }
 .evrow { display: flex; justify-content: space-between; gap: 8px; font-size: .92rem; }
 .dot { display: inline-block; width: .65em; height: .65em; margin-right: 8px; border-radius: 50%; background: #e5484d; box-shadow: 0 0 0 2px rgba(229,72,77,.25); }
 .dot.on { background: #3ecf8e; box-shadow: 0 0 0 2px rgba(62,207,142,.3); }
+.evrow strong.closes { color: #ff6b6f; }
+.legend { margin-top: 6px; }
+.legend .dot { margin-right: 4px; }
 .evrow strong { font-size: 1rem; }
 .reset .lbl { color: var(--muted); font-size: .8rem; }
 .reset strong { font-size: 1.35rem; font-variant-numeric: tabular-nums; color: var(--accent); }
