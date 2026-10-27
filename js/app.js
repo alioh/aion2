@@ -27,8 +27,8 @@
    *  Falls back to the map-layer icon, or nothing, when no file exists. */
   const ICON_EXT = ['png', 'svg', 'webp', 'jpg'];
   const slug = (t) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  // Which icon file exists is remembered for 30 minutes so a page load does not re-probe every file.
-  const ICON_TTL = 30 * 60000;
+  // Which icon file exists is remembered for 5 minutes so a page load does not re-probe every file.
+  const ICON_TTL = 5 * 60000;
   const iconCache = (() => { try { return JSON.parse(localStorage.getItem('aion2-icon-cache') || '{}'); } catch (e) { return {}; } })();
   function rememberIcon(id, url) {
     iconCache[id] = [url, Date.now()];
