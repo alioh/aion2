@@ -97,8 +97,9 @@ textarea { resize: vertical; }
 .thead { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
 .ttitle { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; text-align: left; background: none; border: 0; color: inherit; font: inherit; font-weight: 600; font-size: 1.02rem; cursor: pointer; padding: 4px 0; min-height: 36px; }
 .ttext { min-width: 0; overflow-wrap: anywhere; }
-.chev { flex: none; font-size: .7rem; color: var(--accent); transition: transform .15s; }
-.task.open .chev { transform: rotate(90deg); }
+.chev { flex: none; width: 8px; height: 8px; margin: 0 4px 2px 2px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform .15s; }
+.task.open .chev { transform: rotate(-135deg) translate(-2px, -2px); margin-bottom: 0; }
+.ttitle:hover .chev { border-color: var(--text); }
 .thead .badges { margin: 0; flex: none; justify-content: flex-end; max-width: 46%; }
 .tbody { padding: 0 12px 12px 54px; }
 @media (max-width: 520px) {
