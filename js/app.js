@@ -257,19 +257,20 @@
   }
 
   /** Describes the reset moment in the display timezone, e.g. "10:00 Asia/Riyadh (07:00 UTC), weekly on Wednesday". */
-  function resetSummary() {
+  function resetSummary(tz) {
     const s = state.settings;
+    tz = tz || s.timezone;
     const hhmm = (p) => String(p.h).padStart(2, '0') + ':' + String(p.mi).padStart(2, '0');
-    const daily = T.partsIn(T.nextReset('daily', nowMs(), cfg()), s.timezone);
-    const weekly = T.partsIn(T.nextReset('weekly', nowMs(), cfg()), s.timezone);
+    const daily = T.partsIn(T.nextReset('daily', nowMs(), cfg()), tz);
+    const weekly = T.partsIn(T.nextReset('weekly', nowMs(), cfg()), tz);
     const wd = DAYS[new Date(Date.UTC(weekly.y, weekly.mo - 1, weekly.d)).getUTCDay()];
     const utc = s.resetTime.padStart(5, '0') + ' UTC';
-    return 'Resets daily at ' + hhmm(daily) + ' ' + s.timezone + (s.timezone === 'UTC' ? '' : ' (' + utc + ')') +
+    return 'Resets daily at ' + hhmm(daily) + ' ' + tz.split('/').pop().replace('_', ' ') + (tz === 'UTC' ? '' : ' (' + utc + ')') +
       ', weekly on ' + wd + '.';
   }
 
   function renderNote() {
-    $('resetNote').replaceChildren(resetSummary());
+    $('resetNote').replaceChildren(resetSummary(state.settings.serverTz).replace(/ \(\d\d:\d\d UTC\)/, ''));
     if (saveError) $('resetNote').append(h('br'), '⚠ Could not save to browser storage. Export a backup.');
   }
 
