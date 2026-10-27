@@ -8,8 +8,8 @@
 
 .tl-axis { display: grid; grid-template-columns: var(--info) 1fr 30px; height: 22px; }
 .tl-axis-track { grid-column: 2; position: relative; }
-.tick { position: absolute; top: 0; transform: translateX(-50%); font-size: .72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-.tick.now { transform: none; color: var(--amber); font-weight: 700; }
+.tl-tick { position: absolute; top: 0; transform: translateX(-50%); font-size: .72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tl-tick.now { transform: none; color: var(--amber); font-weight: 700; }
 
 .tl-body { position: relative; }
 .tl-item { border-radius: 12px; }

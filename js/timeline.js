@@ -143,9 +143,9 @@
     for (let l = Math.ceil(localNow / (step * H)) * step * H; l - off < end; l += step * H) {
       const t = l - off;
       if (l % (24 * H) === 0) continue;   // midnight is labelled by the "Tomorrow" guide
-      if (pct(t) > 4 && pct(t) < 97) ticks.push(h('span', { class: 'tick', style: 'left:' + pct(t) + '%' }, hm(t)));
+      if (pct(t) > 4 && pct(t) < 97) ticks.push(h('span', { class: 'tl-tick', style: 'left:' + pct(t) + '%' }, hm(t)));
     }
-    axisEl.replaceChildren(h('span', { class: 'tick now', style: 'left:0%' }, 'NOW'), ...ticks);
+    axisEl.replaceChildren(h('span', { class: 'tl-tick now', style: 'left:0%' }, 'NOW'), ...ticks);
 
     // vertical lines: midnight (server clock) and next reset
     const lines = [];
