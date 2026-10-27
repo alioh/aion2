@@ -28,7 +28,7 @@
   const ICON_EXT = ['png', 'svg', 'webp', 'jpg'];
   const slug = (t) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   // Which icon file exists is remembered for 5 minutes so a page load does not re-probe every file.
-  const ICON_TTL = 5 * 60000;
+  const ICON_TTL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 0 : 5 * 60000;   // no memory while developing locally
   const iconCache = (() => { try { return JSON.parse(localStorage.getItem('aion2-icon-cache') || '{}'); } catch (e) { return {}; } })();
   function rememberIcon(id, url) {
     iconCache[id] = [url, Date.now()];
