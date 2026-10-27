@@ -282,38 +282,6 @@
     tick();
   }
 
-  // ---------- recurring events ----------
-  // Windows are [start minute of day, length in minutes] on the server region's own clock (source: shugo.gg/timers).
-  const EVERY = (from, step, dur, off = 0) => { const a = []; for (let h = from; h < 24; h += step) a.push([h * 60 + off, dur]); return a; };
-  const EVENTS = [
-    { name: 'Spacetime Rift', win: EVERY(2, 3, 10) },
-    { name: 'Shugo Festival', win: EVERY(0, 1, 10) },
-    { name: 'Dimensional Invasion', win: EVERY(0, 1, 15, 30) },
-    { name: 'Battlefield', win: [[11 * 60, 180], [19 * 60, 120]] },   // matchmaking windows 11:00-14:00 and 19:00-21:00
-    { name: 'Watcher Kaira', win: EVERY(1, 3, 30) },
-  ];
-  function tickEvents(n) {
-    const box = $('events');
-    if (!box.children.length) box.replaceChildren(...EVENTS.map((e) => h('div', { class: 'evrow' }, h('span', null, h('i', { class: 'dot', id: 'dot-' + e.name.replace(/\W/g, '') }), e.name), h('strong', { id: 'ev-' + e.name.replace(/\W/g, '') }))));
-    const sp = T.partsIn(n, state.settings.serverTz), MIN = 60000, DAY = 1440 * MIN;
-    const dayMs = (sp.h * 3600 + sp.mi * 60 + sp.s) * 1000;
-    for (const e of EVENTS) {
-      let left = 0, wait = Infinity;
-      for (const [s, dur] of e.win) {
-        const since = (((dayMs - s * MIN) % DAY) + DAY) % DAY;
-        if (since < dur * MIN) left = Math.max(left, dur * MIN - since);
-        wait = Math.min(wait, (((s * MIN - dayMs) % DAY) + DAY) % DAY || DAY);
-      }
-      const id = e.name.replace(/\W/g, ''), dot = $('dot-' + id);
-      $('ev-' + id).textContent = T.formatCountdown(left || wait).replace(/^00:/, '');
-      dot.className = 'dot ' + (left ? 'on' : 'off');
-      $('ev-' + id).className = left ? 'closes' : '';
-      dot.title = left ? 'Open, time left' : 'Closed, time until it opens';
-      dot.setAttribute('role', 'img');
-      dot.setAttribute('aria-label', dot.title);
-    }
-  }
-
   // ---------- countdown ----------
   let lastKeys = '';
   function tick() {
@@ -322,7 +290,7 @@
     const tz = state.settings.serverTz;
     $('serverTime').textContent = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(n);
     $('serverLbl').textContent = tz.split('/').pop().replace('_', ' ');
-    tickEvents(n);
+    if (window.AionTimeline) window.AionTimeline.configure({ tz, resetTime: state.settings.resetTime, weeklyDay: state.settings.weeklyDay });
     $('dailyCd').textContent = T.formatCountdown(T.nextReset('daily', n, cfg()) - n);
     $('weeklyCd').textContent = T.formatCountdown(T.nextReset('weekly', n, cfg()) - n);
     const k = key('daily') + '|' + key('weekly');
