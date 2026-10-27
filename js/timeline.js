@@ -135,6 +135,7 @@
     const pct = (t) => ((t - now) / span) * 100;
 
     $('rangeTxt').textContent = range;
+    $('tlScroll').style.setProperty('--hours', range);
 
     // axis ticks on whole hours of the server clock
     const lp = T.partsIn(now, tz), localNow = Date.UTC(lp.y, lp.mo - 1, lp.d, lp.h, lp.mi, lp.s), off = localNow - now;

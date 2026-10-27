@@ -32,7 +32,7 @@
 .blk { position: absolute; top: 4px; bottom: 4px; border-radius: 6px; background: color-mix(in srgb, var(--amber) 38%, transparent); border: 1px solid color-mix(in srgb, var(--amber) 65%, transparent); }
 .blk.run { background: color-mix(in srgb, var(--amber) 85%, transparent); }
 
-.tl-detail { position: relative; z-index: 1; background: var(--surface2); border-radius: 0 0 12px 12px; padding: 4px 12px 14px; }
+.tl-detail { position: sticky; z-index: 1; background: var(--surface2); border-radius: 0 0 12px 12px; padding: 4px 12px 14px; }
 .tl-meta { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .82rem; margin-bottom: 6px; flex-wrap: wrap; }
 .tag { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: .7rem; font-weight: 700; letter-spacing: .05em; color: var(--text); }
 .tl-detail p { margin: 0 0 10px; color: var(--muted); font-size: .88rem; max-width: 70ch; }
@@ -60,3 +60,18 @@
 .tl-chev { justify-self: center; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg) translate(-2px, -2px); transition: transform .15s; }
 .tl-item.open .tl-chev { transform: rotate(-135deg) translate(-2px, -2px); }
 .tl-row:hover .tl-chev { border-color: var(--text); }
+
+/* Phones: the track gets a fixed width per hour and the card scrolls sideways; names stay pinned on the left. */
+.tl, .tl-scroll { min-width: 0; max-width: 100%; }
+.tl-scroll { overflow-x: auto; --pxh: 0px; scrollbar-width: thin; }
+.tl-inner { min-width: calc(var(--info) + 30px + var(--hours, 24) * var(--pxh)); }
+.tl-info { position: sticky; left: 0; z-index: 2; background: var(--surface); padding-right: 6px; }
+.tl-item.open .tl-info { background: var(--surface2); }
+.tl-detail { max-width: min(100%, calc(100vw - 64px)); left: 0; }
+@media (max-width: 640px) {
+  .tl { --info: 152px; }
+  .tl-scroll { --pxh: 56px; padding-bottom: 6px; }
+  .tl-name b { font-size: .85rem; }
+  .tl-name small { font-size: .74rem; }
+  .ico { width: 30px; height: 30px; }
+}
