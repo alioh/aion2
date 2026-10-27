@@ -399,7 +399,7 @@
   }
   for (const id of ['sTime', 'sDay', 'sTz', 'sConfirmed']) $(id).addEventListener('change', applySettings);
   $('sUseCommunity').addEventListener('click', () => {
-    $('sTime').value = '10:00'; $('sTz').value = 'Asia/Riyadh'; $('sDay').value = 3; $('sConfirmed').checked = true; applySettings();
+    $('sTime').value = '07:00'; $('sTz').value = 'UTC'; $('sDay').value = 3; $('sConfirmed').checked = true; applySettings();
   });
   $('settingsBtn').addEventListener('click', openSettings);
   $('themeBtn').addEventListener('click', () => {

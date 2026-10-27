@@ -111,9 +111,9 @@ test('youtubeId parses common URL shapes', () => {
   assert.equal(S.youtubeId('https://evil.com/watch?v=hAl6c_LwE3M'), '');
 });
 
-test('defaults: confirmed 07:00 UTC reset shown as 10:00 KSA, same instant', () => {
+test('defaults: confirmed 07:00 UTC reset', () => {
   const st = S.defaultState(SEED, SEED.RESOURCES);
-  assert.deepStrictEqual([st.settings.resetTime, st.settings.timezone, st.settings.weeklyDay, st.settings.resetConfirmed], ['10:00', 'Asia/Riyadh', 3, true]);
+  assert.deepStrictEqual([st.settings.resetTime, st.settings.timezone, st.settings.weeklyDay, st.settings.resetConfirmed], ['07:00', 'UTC', 3, true]);
   assert.equal(T.nextReset('daily', utc('2026-10-27T05:00:00Z'), st.settings), utc('2026-10-27T07:00:00Z'));
   assert.equal(T.nextReset('weekly', utc('2026-10-27T05:00:00Z'), st.settings), utc('2026-10-28T07:00:00Z'));
 });
@@ -122,7 +122,7 @@ test('old placeholder settings are upgraded; user-confirmed ones are kept', () =
   const old = S.defaultState(SEED, SEED.RESOURCES);
   old.settings = { resetTime: '05:00', timezone: 'UTC', weeklyDay: 3, theme: 'light', resetConfirmed: false };
   const up = S.normalize(JSON.parse(JSON.stringify(old)), SEED, SEED.RESOURCES).settings;
-  assert.deepStrictEqual([up.resetTime, up.timezone, up.resetConfirmed, up.theme], ['10:00', 'Asia/Riyadh', true, 'light']);
+  assert.deepStrictEqual([up.resetTime, up.timezone, up.resetConfirmed, up.theme], ['07:00', 'UTC', true, 'light']);
   old.settings = { resetTime: '08:30', timezone: 'Europe/Paris', weeklyDay: 2, theme: 'dark', resetConfirmed: true };
   assert.equal(S.normalize(JSON.parse(JSON.stringify(old)), SEED, SEED.RESOURCES).settings.resetTime, '08:30');
 });

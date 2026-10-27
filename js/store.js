@@ -101,8 +101,8 @@
     const c = { id: uid('ch'), name: 'Character 1' };
     return {
       version: VERSION,
-      // 07:00 UTC is the confirmed global reset; 10:00 in Asia/Riyadh (KSA, UTC+3) is the same moment.
-      settings: { resetTime: '10:00', timezone: 'Asia/Riyadh', weeklyDay: 3, theme: 'dark', resetConfirmed: true },
+      // 07:00 UTC is the confirmed global reset.
+      settings: { resetTime: '07:00', timezone: 'UTC', weeklyDay: 3, theme: 'dark', resetConfirmed: true },
       characters: [c],
       activeCharId: c.id,
       tasks: seedTasks(seed),
@@ -128,7 +128,7 @@
       resetConfirmed: rs.resetConfirmed === true,
     };
     try { new Intl.DateTimeFormat('en', { timeZone: settings.timezone }); } catch (e) { settings.timezone = 'UTC'; }
-    // Upgrade the old unconfirmed placeholder (05:00 UTC) to the confirmed 07:00 UTC reset, shown in KSA time.
+    // Upgrade the old unconfirmed placeholder (05:00 UTC) to the confirmed 07:00 UTC reset.
     if (!rs.resetConfirmed && settings.resetTime.padStart(5, '0') === '05:00' && settings.timezone === 'UTC') {
       Object.assign(settings, d.settings, { theme: settings.theme, weeklyDay: settings.weeklyDay });
     }
