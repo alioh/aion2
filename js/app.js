@@ -285,12 +285,14 @@
   let lastKeys = '';
   function tick() {
     const n = nowMs();
-    const tz = state.settings.timezone;
+    // The game's reset schedule stays in UTC; the server time zone only changes how the server clock reads.
+    const tz = state.settings.serverTz;
     let st = new Date(n).toISOString().slice(11, 19);
     if (tz !== 'UTC') {
-      try { st += '  (' + new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }).format(n) + ' ' + tz + ')'; } catch (e) { /* bad tz: show UTC only */ }
+      try { st = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(n) + '  (' + st.slice(0, 5) + ' UTC)'; } catch (e) { /* bad tz: show UTC only */ }
     }
     $('serverTime').textContent = st;
+    $('serverLbl').textContent = 'Server time (' + (tz === 'UTC' ? 'UTC' : tz.split('/').pop().replace('_', ' ')) + ')';
     // Rifts open every 3 h at 00:00, 03:00 ... 21:00 UTC (= 02:00, 05:00 ... CEST; player-observed) and stay open ~10 min.
     const H = 3600000, since = n % (3 * H), rift = $('riftCd');
     rift.textContent = since < 10 * 60000
@@ -423,6 +425,7 @@
     const local = Intl.DateTimeFormat().resolvedOptions().timeZone;
     $('sTz').replaceChildren(...timezones().map((z) => h('option', { value: z }, z === local ? z + ' (this device)' : z)));
     $('sTz').value = s.timezone;
+    $('sServerTz').value = s.serverTz;
     $('sResetEdit').hidden = true;      // the reset moment stays locked until the button is pressed
     $('sUnlock').hidden = false;
     $('sResetInfo').textContent = resetSummary();
@@ -434,11 +437,12 @@
     if ($('sTime').value) s.resetTime = $('sTime').value;
     s.weeklyDay = +$('sDay').value;
     s.timezone = $('sTz').value;
+    s.serverTz = $('sServerTz').value;
     s.resetConfirmed = true;
     save(); render();
     $('sResetInfo').textContent = resetSummary();
   }
-  for (const id of ['sTime', 'sDay', 'sTz']) $(id).addEventListener('change', applySettings);
+  for (const id of ['sTime', 'sDay', 'sTz', 'sServerTz']) $(id).addEventListener('change', applySettings);
   $('sUnlock').addEventListener('click', () => { $('sResetEdit').hidden = false; $('sUnlock').hidden = true; });
   $('sRestoreReset').addEventListener('click', () => {
     $('sTime').value = '07:00'; $('sDay').value = 3; applySettings();

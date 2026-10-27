@@ -102,7 +102,7 @@
     return {
       version: VERSION,
       // 07:00 UTC is the confirmed global reset.
-      settings: { resetTime: '07:00', timezone: 'UTC', weeklyDay: 3, theme: 'dark', resetConfirmed: true, resetUtc: true },
+      settings: { resetTime: '07:00', timezone: 'UTC', serverTz: 'UTC', weeklyDay: 3, theme: 'dark', resetConfirmed: true, resetUtc: true },
       characters: [c],
       activeCharId: c.id,
       tasks: seedTasks(seed),
@@ -123,11 +123,13 @@
     const settings = {
       resetTime: /^\d{1,2}:\d{2}$/.test(rs.resetTime) ? rs.resetTime : d.settings.resetTime,
       timezone: str(rs.timezone, 100) || d.settings.timezone,
+      serverTz: str(rs.serverTz, 100) || d.settings.serverTz,
       weeklyDay: Number.isInteger(rs.weeklyDay) && rs.weeklyDay >= 0 && rs.weeklyDay <= 6 ? rs.weeklyDay : d.settings.weeklyDay,
       theme: rs.theme === 'light' ? 'light' : 'dark',
       resetConfirmed: rs.resetConfirmed === true,
     };
     try { new Intl.DateTimeFormat('en', { timeZone: settings.timezone }); } catch (e) { settings.timezone = 'UTC'; }
+    try { new Intl.DateTimeFormat('en', { timeZone: settings.serverTz }); } catch (e) { settings.serverTz = 'UTC'; }
     // Upgrade the old unconfirmed placeholder (05:00 UTC) to the confirmed 07:00 UTC reset.
     if (!rs.resetConfirmed && settings.resetTime.padStart(5, '0') === '05:00' && settings.timezone === 'UTC') {
       Object.assign(settings, d.settings, { theme: settings.theme, weeklyDay: settings.weeklyDay });
