@@ -95,7 +95,7 @@
       r.detail = h('div', { class: 'tl-detail', hidden: '' });
       const head = h('button', { class: 'tl-row', type: 'button', 'aria-expanded': 'false' },
         h('span', { class: 'tl-info' }, r.icon, h('span', { class: 'tl-name' }, h('b', null, ev.name), h('small', null, r.dot, r.status))),
-        r.track, h('span', { class: 'chev', 'aria-hidden': 'true' }));
+        r.track, h('span', { class: 'tl-chev', 'aria-hidden': 'true' }));
       head.addEventListener('click', () => { openId = openId === ev.id ? null : ev.id; syncOpen(); drawDetail(ev, nowMs()); });
       r.head = head;
       rowsEl.append(h('div', { class: 'tl-item', id: 'it-' + ev.id }, head, r.detail));

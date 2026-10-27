@@ -57,6 +57,6 @@
 .tl-title { margin-right: auto; }
 .tl-src { color: var(--accent); text-decoration: none; margin-left: 4px; }
 .tl-cd { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; color: var(--muted); cursor: pointer; }
-.chev { justify-self: center; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg) translate(-2px, -2px); transition: transform .15s; }
-.tl-item.open .chev { transform: rotate(-135deg) translate(-2px, -2px); }
-.tl-row:hover .chev { border-color: var(--text); }
+.tl-chev { justify-self: center; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg) translate(-2px, -2px); transition: transform .15s; }
+.tl-item.open .tl-chev { transform: rotate(-135deg) translate(-2px, -2px); }
+.tl-row:hover .tl-chev { border-color: var(--text); }
