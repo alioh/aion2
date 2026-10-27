@@ -315,12 +315,8 @@
     const n = nowMs();
     // The game's reset schedule stays in UTC; the server time zone only changes how the server clock reads.
     const tz = state.settings.serverTz;
-    let st = new Date(n).toISOString().slice(11, 19);
-    if (tz !== 'UTC') {
-      try { st = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(n) + '  (' + st.slice(0, 5) + ' UTC)'; } catch (e) { /* bad tz: show UTC only */ }
-    }
-    $('serverTime').textContent = st;
-    $('serverLbl').textContent = 'Server time (' + (tz === 'UTC' ? 'UTC' : tz.split('/').pop().replace('_', ' ')) + ')';
+    $('serverTime').textContent = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(n);
+    $('serverLbl').textContent = tz.split('/').pop().replace('_', ' ');
     tickEvents(n);
     $('dailyCd').textContent = T.formatCountdown(T.nextReset('daily', n, cfg()) - n);
     $('weeklyCd').textContent = T.formatCountdown(T.nextReset('weekly', n, cfg()) - n);
