@@ -206,6 +206,7 @@
       if (g) g.focus();
     });
 
+    const rchev = h('button', { class: 'rchev', type: 'button', tabindex: '-1', 'aria-hidden': 'true', title: 'Show or hide details' }, h('span', { class: 'chev' }));
     const isOpen = manage || openIds.has(task.id); // manage mode shows everything so the tools are reachable
     const body = h('div', { class: 'tbody', hidden: !isOpen },
       task.description && h('p', { class: 'desc' }, task.description),
@@ -217,7 +218,8 @@
     const toggle = h('button', { class: 'ttitle', type: 'button', 'aria-expanded': String(isOpen) },
       h('span', { class: 'chev', 'aria-hidden': 'true' }), taskIcon(task, layer && iconEl(layer.id)), h('span', { class: 'ttext' }, task.title));
     const card = h('article', { class: 'task' + (isOpen ? ' open' : '') + (done ? ' done' : '') + (task.hidden ? ' is-hidden' : ''), 'data-id': task.id, 'data-idx': idx },
-      h('div', { class: 'thead' }, grip, h('label', { class: 'tick' }, check), toggle, badges), body);
+      h('div', { class: 'thead' }, grip, h('label', { class: 'tick' }, check), toggle, rchev, badges), body);
+    rchev.addEventListener('click', () => toggle.click());
     toggle.addEventListener('click', () => {
       const open = !card.classList.contains('open');
       card.classList.toggle('open', open);

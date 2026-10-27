@@ -99,12 +99,15 @@ textarea { resize: vertical; }
 .ttext { min-width: 0; overflow-wrap: anywhere; }
 .chev { flex: none; width: 8px; height: 8px; margin: 0 4px 2px 2px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform .15s; }
 .task.open .chev { transform: rotate(-135deg) translate(-2px, -2px); margin-bottom: 0; }
-.ttitle:hover .chev { border-color: var(--text); }
+.ttitle:hover .chev, .rchev:hover .chev { border-color: var(--text); }
+.rchev { order: 2; flex: none; background: none; border: 0; padding: 8px 6px; margin: -8px -4px; cursor: pointer; }
+.rchev .chev { display: block; margin: 0 0 2px; }
+.task.open .rchev .chev { margin-bottom: 0; }
 .thead .badges { margin: 0; flex: none; justify-content: flex-end; max-width: 46%; }
 .tbody { padding: 0 12px 12px 54px; }
 @media (max-width: 520px) {
   .thead { flex-wrap: wrap; row-gap: 2px; }
-  .thead .badges { flex-basis: 100%; max-width: none; justify-content: flex-start; padding-left: 66px; }
+  .thead .badges { flex-basis: 100%; max-width: none; justify-content: flex-start; padding-left: 66px; order: 3; }
   .tbody { padding-left: 12px; }
 }
 .task.is-hidden { border-style: dashed; opacity: .55; }
