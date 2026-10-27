@@ -102,7 +102,7 @@
     return {
       version: VERSION,
       // 07:00 UTC is the confirmed global reset.
-      settings: { resetTime: '07:00', timezone: 'UTC', serverTz: 'UTC', weeklyDay: 3, theme: 'dark', resetConfirmed: true, resetUtc: true },
+      settings: { resetTime: '07:00', timezone: 'UTC', serverTz: 'Europe/Berlin', weeklyDay: 3, theme: 'dark', resetConfirmed: true, resetUtc: true },
       characters: [c],
       activeCharId: c.id,
       tasks: seedTasks(seed),
@@ -129,7 +129,8 @@
       resetConfirmed: rs.resetConfirmed === true,
     };
     try { new Intl.DateTimeFormat('en', { timeZone: settings.timezone }); } catch (e) { settings.timezone = 'UTC'; }
-    try { new Intl.DateTimeFormat('en', { timeZone: settings.serverTz }); } catch (e) { settings.serverTz = 'UTC'; }
+    try { new Intl.DateTimeFormat('en', { timeZone: settings.serverTz }); } catch (e) { settings.serverTz = d.settings.serverTz; }
+    if (settings.serverTz === 'UTC' || settings.serverTz === 'Europe/Paris') settings.serverTz = d.settings.serverTz;
     // Upgrade the old unconfirmed placeholder (05:00 UTC) to the confirmed 07:00 UTC reset.
     if (!rs.resetConfirmed && settings.resetTime.padStart(5, '0') === '05:00' && settings.timezone === 'UTC') {
       Object.assign(settings, d.settings, { theme: settings.theme, weeklyDay: settings.weeklyDay });

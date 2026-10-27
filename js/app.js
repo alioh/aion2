@@ -281,6 +281,33 @@
     tick();
   }
 
+  // ---------- recurring events ----------
+  // Start times are on the server region's own clock (shugo.gg, not an official NCSoft schedule), so they are unverified.
+  const EVERY = (from, step) => { const a = []; for (let h = from; h < 24; h += step) a.push(h * 60); return a; };
+  const EVENTS = [
+    { name: 'Spacetime Rift', starts: EVERY(2, 3), dur: 10 },
+    { name: 'Shugo Festival', starts: EVERY(0, 1), dur: 10 },
+    { name: 'Dimensional Invasion', starts: EVERY(0, 1).map((m) => m + 30), dur: 15 },
+    { name: 'Battlefield', starts: [11 * 60, 19 * 60], dur: 120 },
+    { name: 'Watcher Kaira', starts: EVERY(1, 3), dur: 30 },
+  ];
+  function tickEvents(n) {
+    const box = $('events');
+    if (!box.children.length) box.replaceChildren(...EVENTS.map((e) => h('div', { class: 'evrow' }, h('span', null, e.name), h('strong', { id: 'ev-' + e.name.replace(/\W/g, '') }))));
+    const sp = T.partsIn(n, state.settings.serverTz), MIN = 60000, DAY = 1440 * MIN;
+    const dayMs = (sp.h * 3600 + sp.mi * 60 + sp.s) * 1000;
+    for (const e of EVENTS) {
+      let since = Infinity, wait = Infinity;
+      for (const s of e.starts) {
+        since = Math.min(since, (((dayMs - s * MIN) % DAY) + DAY) % DAY);
+        wait = Math.min(wait, (((s * MIN - dayMs) % DAY) + DAY) % DAY);
+      }
+      $('ev-' + e.name.replace(/\W/g, '')).textContent = since < e.dur * MIN
+        ? 'Open now, ' + T.formatCountdown(e.dur * MIN - since).replace(/^00:/, '') + ' left'
+        : T.formatCountdown(wait || DAY).replace(/^00:/, '');
+    }
+  }
+
   // ---------- countdown ----------
   let lastKeys = '';
   function tick() {
@@ -293,11 +320,7 @@
     }
     $('serverTime').textContent = st;
     $('serverLbl').textContent = 'Server time (' + (tz === 'UTC' ? 'UTC' : tz.split('/').pop().replace('_', ' ')) + ')';
-    // Rifts open every 3 h at 00:00, 03:00 ... 21:00 UTC (= 02:00, 05:00 ... CEST; player-observed) and stay open ~10 min.
-    const H = 3600000, since = n % (3 * H), rift = $('riftCd');
-    rift.textContent = since < 10 * 60000
-      ? 'Open now, ' + T.formatCountdown(10 * 60000 - since).slice(3) + ' left'
-      : T.formatCountdown(3 * H - since);
+    tickEvents(n);
     $('dailyCd').textContent = T.formatCountdown(T.nextReset('daily', n, cfg()) - n);
     $('weeklyCd').textContent = T.formatCountdown(T.nextReset('weekly', n, cfg()) - n);
     const k = key('daily') + '|' + key('weekly');

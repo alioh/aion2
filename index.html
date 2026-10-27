@@ -7,7 +7,7 @@
   <meta name="description" content="Personal daily and weekly task tracker for AION 2, per character. Unofficial fan tool.">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a2f45'/%3E%3Cpath d='M9 17l5 5 9-12' fill='none' stroke='%237ee0c3' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="stylesheet" href="css/style.css?v=10">
 </head>
 <body>
   <header class="topbar">
@@ -34,7 +34,7 @@
       <div class="reset wide"><span class="lbl" id="serverLbl">Server time (UTC)</span><strong id="serverTime">--:--:--</strong></div>
       <div class="reset"><span class="lbl">Daily reset in</span><strong id="dailyCd">--:--:--</strong></div>
       <div class="reset"><span class="lbl">Weekly reset in</span><strong id="weeklyCd">--</strong></div>
-      <div class="reset wide"><span class="lbl">Next Spacetime Rift <span class="badge">unverified</span></span><strong id="riftCd">--:--:--</strong></div>
+      <div class="reset wide"><span class="lbl">Events on server clock <span class="badge">unverified</span></span><div id="events" class="events"></div></div>
       <p id="resetNote" class="note"></p>
     </section>
 
@@ -166,10 +166,11 @@
       <h2>Settings</h2>
       <label>My server's time zone
         <select id="sServerTz">
-          <option value="UTC">Global / UTC</option>
-          <option value="Europe/Paris">Europe (CET / CEST)</option>
-          <option value="America/Los_Angeles">North America (PT)</option>
-          <option value="Asia/Seoul">Korea (KST)</option>
+          <option value="Europe/Berlin">Europe (Berlin, CET / CEST)</option>
+          <option value="America/New_York">North America East (New York)</option>
+          <option value="America/Los_Angeles">North America West (Los Angeles)</option>
+          <option value="America/Sao_Paulo">South America (Sao Paulo)</option>
+          <option value="Asia/Seoul">Asia (Seoul, KST)</option>
         </select>
       </label>
       <label>Display timezone <select id="sTz"></select></label>
@@ -196,10 +197,10 @@
     </div>
   </dialog>
 
-  <script src="js/seed.js?v=9"></script>
-  <script src="js/time.js?v=9"></script>
-  <script src="js/store.js?v=9"></script>
-  <script src="js/maps.js?v=9"></script>
-  <script src="js/app.js?v=9"></script>
+  <script src="js/seed.js?v=10"></script>
+  <script src="js/time.js?v=10"></script>
+  <script src="js/store.js?v=10"></script>
+  <script src="js/maps.js?v=10"></script>
+  <script src="js/app.js?v=10"></script>
 </body>
 </html>
