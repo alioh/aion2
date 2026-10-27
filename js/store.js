@@ -102,7 +102,7 @@
     return {
       version: VERSION,
       // 07:00 UTC is the confirmed global reset.
-      settings: { resetTime: '07:00', timezone: 'UTC', weeklyDay: 3, theme: 'dark', resetConfirmed: true },
+      settings: { resetTime: '07:00', timezone: 'UTC', weeklyDay: 3, theme: 'dark', resetConfirmed: true, resetUtc: true },
       characters: [c],
       activeCharId: c.id,
       tasks: seedTasks(seed),
@@ -132,6 +132,17 @@
     if (!rs.resetConfirmed && settings.resetTime.padStart(5, '0') === '05:00' && settings.timezone === 'UTC') {
       Object.assign(settings, d.settings, { theme: settings.theme, weeklyDay: settings.weeklyDay });
     }
+    // Older saves kept the reset as wall-clock time in the chosen timezone. The reset is now fixed in UTC
+    // and the timezone is display-only, so convert once.
+    if (rs.resetUtc !== true && settings.timezone !== 'UTC') {
+      const T = typeof require !== 'undefined' ? require('./time.js') : root.AionTime;
+      const [h, m] = settings.resetTime.split(':').map(Number);
+      const now = new Date();
+      const utcMs = T.zonedToUtc(now.getUTCFullYear(), now.getUTCMonth() + 1, now.getUTCDate(), h, m, settings.timezone);
+      settings.resetTime = new Date(utcMs).toISOString().slice(11, 16);
+    }
+    settings.resetConfirmed = true;
+    settings.resetUtc = true;
 
     const seen = new Set();
     const characters = [];

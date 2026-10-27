@@ -123,8 +123,26 @@ test('old placeholder settings are upgraded; user-confirmed ones are kept', () =
   old.settings = { resetTime: '05:00', timezone: 'UTC', weeklyDay: 3, theme: 'light', resetConfirmed: false };
   const up = S.normalize(JSON.parse(JSON.stringify(old)), SEED, SEED.RESOURCES).settings;
   assert.deepStrictEqual([up.resetTime, up.timezone, up.resetConfirmed, up.theme], ['07:00', 'UTC', true, 'light']);
-  old.settings = { resetTime: '08:30', timezone: 'Europe/Paris', weeklyDay: 2, theme: 'dark', resetConfirmed: true };
+  old.settings = { resetTime: '08:30', timezone: 'Europe/Paris', weeklyDay: 2, theme: 'dark', resetConfirmed: true, resetUtc: true };
   assert.equal(S.normalize(JSON.parse(JSON.stringify(old)), SEED, SEED.RESOURCES).settings.resetTime, '08:30');
+});
+
+test('legacy wall-clock reset in a timezone is converted once to UTC (KSA 10:00 -> 07:00 UTC)', () => {
+  const old = S.defaultState(SEED, SEED.RESOURCES);
+  old.settings = { resetTime: '10:00', timezone: 'Asia/Riyadh', weeklyDay: 3, theme: 'dark', resetConfirmed: true };
+  const s1 = S.normalize(JSON.parse(JSON.stringify(old)), SEED, SEED.RESOURCES).settings;
+  assert.deepStrictEqual([s1.resetTime, s1.timezone, s1.resetUtc], ['07:00', 'Asia/Riyadh', true]);
+  // already-converted state is not converted again
+  const s2 = S.normalize(JSON.parse(JSON.stringify({ ...old, settings: s1 })), SEED, SEED.RESOURCES).settings;
+  assert.equal(s2.resetTime, '07:00');
+});
+
+test('display timezone never moves the reset instant', () => {
+  const cfg = { resetTime: '07:00', weeklyDay: 3, timezone: 'UTC' };
+  const now = utc('2026-10-27T05:00:00Z');
+  assert.equal(T.nextReset('daily', now, cfg), utc('2026-10-27T07:00:00Z'));
+  const p = T.partsIn(T.nextReset('daily', now, cfg), 'Asia/Riyadh');
+  assert.deepStrictEqual([p.h, p.mi], [10, 0]);
 });
 
 test('server-scope and one-time completions survive round trip', () => {

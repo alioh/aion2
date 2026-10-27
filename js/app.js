@@ -44,7 +44,9 @@
   save();
 
   const activeChar = () => state.characters.find((c) => c.id === state.activeCharId) || state.characters[0];
-  const key = (type) => T.periodKey(type, nowMs(), state.settings);
+  // The reset moment is fixed in UTC; the chosen timezone only changes how times are displayed.
+  const cfg = () => ({ resetTime: state.settings.resetTime, weeklyDay: state.settings.weeklyDay, timezone: 'UTC' });
+  const key = (type) => T.periodKey(type, nowMs(), cfg());
   const owner = (task) => (task.scope === 'server' ? S.SERVER_KEY : activeChar().id);
   const isDone = (task) => ((state.completions[owner(task)] || {})[task.id]) === key(task.resetType);
 
@@ -229,19 +231,20 @@
     if (!tasks.length) root.append(h('p', { class: 'empty' }, 'No tasks match. Clear the filters or search.'));
   }
 
-  function utcNote() {
-    const ms = T.nextReset('daily', nowMs(), state.settings);
-    return ' = ' + new Date(ms).toISOString().slice(11, 16) + ' UTC';
+  /** Describes the reset moment in the display timezone, e.g. "10:00 Asia/Riyadh (07:00 UTC), weekly on Wednesday". */
+  function resetSummary() {
+    const s = state.settings;
+    const hhmm = (p) => String(p.h).padStart(2, '0') + ':' + String(p.mi).padStart(2, '0');
+    const daily = T.partsIn(T.nextReset('daily', nowMs(), cfg()), s.timezone);
+    const weekly = T.partsIn(T.nextReset('weekly', nowMs(), cfg()), s.timezone);
+    const wd = DAYS[new Date(Date.UTC(weekly.y, weekly.mo - 1, weekly.d)).getUTCDay()];
+    const utc = s.resetTime.padStart(5, '0') + ' UTC';
+    return 'Resets daily at ' + hhmm(daily) + ' ' + s.timezone + (s.timezone === 'UTC' ? '' : ' (' + utc + ')') +
+      ', weekly on ' + wd + '.';
   }
 
   function renderNote() {
-    const s = state.settings;
-    const wd = DAYS[s.weeklyDay];
-    $('resetNote').replaceChildren(
-      s.resetConfirmed
-        ? 'Resets daily at ' + s.resetTime + ' (' + s.timezone + ')' + utcNote() + ', weekly on ' + wd + '.'
-        : h('span', {}, h('span', { class: 'badge warn' }, 'placeholder'), ' Reset time ' + s.resetTime + ' ' + s.timezone +
-          ' is not confirmed. Community guides report 07:00 UTC (16:00 server time). Verify it in-game in Settings.'));
+    $('resetNote').replaceChildren(resetSummary());
     if (saveError) $('resetNote').append(h('br'), '⚠ Could not save to browser storage. Export a backup.');
   }
 
@@ -257,8 +260,8 @@
   let lastKeys = '';
   function tick() {
     const n = nowMs();
-    $('dailyCd').textContent = T.formatCountdown(T.nextReset('daily', n, state.settings) - n);
-    $('weeklyCd').textContent = T.formatCountdown(T.nextReset('weekly', n, state.settings) - n);
+    $('dailyCd').textContent = T.formatCountdown(T.nextReset('daily', n, cfg()) - n);
+    $('weeklyCd').textContent = T.formatCountdown(T.nextReset('weekly', n, cfg()) - n);
     const k = key('daily') + '|' + key('weekly');
     if (lastKeys && k !== lastKeys) { lastKeys = k; render(); return; }
     lastKeys = k;
@@ -384,8 +387,9 @@
     const local = Intl.DateTimeFormat().resolvedOptions().timeZone;
     $('sTz').replaceChildren(...timezones().map((z) => h('option', { value: z }, z === local ? z + ' (this device)' : z)));
     $('sTz').value = s.timezone;
-    $('sConfirmed').checked = s.resetConfirmed;
-    $('sNote').textContent = 'Confirmed global reset: 07:00 UTC daily, weekly on Wednesday (aion2maps.com and other guides, confirmed by you). Saudi Arabia (KSA, UTC+3) is 10:00. Pick any timezone and enter the same moment in it. If your timezone changes clocks for daylight saving, use UTC 07:00 instead.';
+    $('sResetEdit').hidden = true;      // the reset moment stays locked until the button is pressed
+    $('sUnlock').hidden = false;
+    $('sResetInfo').textContent = resetSummary();
     $('sMsg').textContent = '';
     $('settingsDlg').showModal();
   }
@@ -394,12 +398,14 @@
     if ($('sTime').value) s.resetTime = $('sTime').value;
     s.weeklyDay = +$('sDay').value;
     s.timezone = $('sTz').value;
-    s.resetConfirmed = $('sConfirmed').checked;
+    s.resetConfirmed = true;
     save(); render();
+    $('sResetInfo').textContent = resetSummary();
   }
-  for (const id of ['sTime', 'sDay', 'sTz', 'sConfirmed']) $(id).addEventListener('change', applySettings);
-  $('sUseCommunity').addEventListener('click', () => {
-    $('sTime').value = '07:00'; $('sTz').value = 'UTC'; $('sDay').value = 3; $('sConfirmed').checked = true; applySettings();
+  for (const id of ['sTime', 'sDay', 'sTz']) $(id).addEventListener('change', applySettings);
+  $('sUnlock').addEventListener('click', () => { $('sResetEdit').hidden = false; $('sUnlock').hidden = true; });
+  $('sRestoreReset').addEventListener('click', () => {
+    $('sTime').value = '07:00'; $('sDay').value = 3; applySettings();
   });
   $('settingsBtn').addEventListener('click', openSettings);
   $('themeBtn').addEventListener('click', () => {

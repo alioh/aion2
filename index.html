@@ -161,14 +161,16 @@
   <dialog id="settingsDlg">
     <div class="form">
       <h2>Settings</h2>
-      <div class="row2">
-        <label>Daily reset time <input id="sTime" type="time" required></label>
-        <label>Weekly reset day <select id="sDay"></select></label>
+      <label>Display timezone <select id="sTz"></select></label>
+      <p class="note" id="sResetInfo"></p>
+      <button type="button" class="btn" id="sUnlock">Change reset time...</button>
+      <div id="sResetEdit" class="form" style="padding:0" hidden>
+        <div class="row2">
+          <label>Daily reset time (UTC) <input id="sTime" type="time" required></label>
+          <label>Weekly reset day (UTC) <select id="sDay"></select></label>
+        </div>
+        <button type="button" class="btn" id="sRestoreReset">Restore 07:00 UTC, Wednesday</button>
       </div>
-      <label>Timezone <select id="sTz"></select></label>
-      <p class="note warnbox" id="sNote"></p>
-      <button type="button" class="btn" id="sUseCommunity">Apply confirmed reset (07:00 UTC)</button>
-      <label class="check"><input id="sConfirmed" type="checkbox"> I confirmed this reset time in-game (hides the placeholder warning)</label>
       <hr>
       <h3>Data</h3>
       <div class="inline wrap-btns">
