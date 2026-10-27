@@ -118,7 +118,7 @@ textarea { resize: vertical; }
 .task.drop-before { box-shadow: 0 -3px 0 0 var(--accent); }
 .task.drop-after { box-shadow: 0 3px 0 0 var(--accent); }
 .tick { display: grid; place-items: center; width: 28px; flex: none; cursor: pointer; }
-.tick input { width: 26px; height: 26px; min-height: 0; accent-color: var(--accent); cursor: pointer; }
+.tick input { width: 20px; height: 20px; min-height: 0; accent-color: var(--accent); cursor: pointer; }
 .body { min-width: 0; flex: 1; }
 .task h3 { font-size: 1.02rem; }
 .badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
