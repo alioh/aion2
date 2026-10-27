@@ -141,6 +141,9 @@ dialog::backdrop { background: rgba(0,0,0,.6); }
 .reslist a { color: var(--accent2); overflow-wrap: anywhere; min-width: 0; }
 code { background: var(--surface2); padding: 0 4px; border-radius: 4px; }
 
+.mapicon { display: inline-flex; flex: none; width: 20px; height: 20px; vertical-align: middle; }
+.mapicon svg { width: 100%; height: 100%; }
+.btn .mapicon, .chip .mapicon { width: 18px; height: 18px; }
 .tabs { display: flex; gap: 4px; }
 .tab { font: inherit; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 6px 12px; cursor: pointer; min-height: 36px; }
 .tab.active { color: var(--text); background: var(--surface2); border-color: var(--border); }

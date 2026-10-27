@@ -183,3 +183,8 @@ test('map urls: faction-aware, missing layers return null, seed map layers exist
   assert.equal(MAPS.layerUrl(MAPS.byId['blacksmithing'], 'altgard'), 'https://interactivemap.app/aion2/maps/altgard/svc-blacksmithing-altgard');
   for (const t of SEED) if (t.mapLayer) assert.ok(MAPS.byId[t.mapLayer], t.id);
 });
+
+test('every map layer has an icon drawn from our own shapes', () => {
+  for (const l of MAPS.LAYERS) assert.match(MAPS.iconSvg(l.id), /^<svg viewBox="0 0 24 24"/, l.id);
+  assert.equal(MAPS.iconSvg('nope'), '');
+});

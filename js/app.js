@@ -22,6 +22,13 @@
     return el;
   }
 
+  /** Small coloured icon for a map layer id (own drawings from maps.js). */
+  function iconEl(id) {
+    const el = h('span', { class: 'mapicon', 'aria-hidden': 'true' });
+    el.innerHTML = window.AionMaps.iconSvg(id); // static trusted markup, never user input
+    return el;
+  }
+
   // ---------- state ----------
   let state;
   let saveError = false;
@@ -161,7 +168,7 @@
     const layer = task.mapLayer && M_.byId[task.mapLayer];
     const mapBtn = layer && h('button', { class: 'btn', type: 'button', title: 'Show on the interactive map',
       onclick: () => { setView('map'); $('mapFaction').value = state.ui.mapFaction; openLayer(layer, state.ui.mapFaction); window.scrollTo(0, 0); } },
-      '\uD83D\uDDFA ' + layer.label.replace(/ \(.*\)$/, ''));
+      iconEl(layer.id), ' ' + layer.label.replace(/ \(.*\)$/, ''));
 
     const tools = manage && h('div', { class: 'tools' },
       h('button', { class: 'btn sm', type: 'button', disabled: pos === 0, 'aria-label': 'Move up', onclick: () => move(task, -1) }, '↑'),
@@ -179,7 +186,7 @@
       stepsSection(task),
       videoSection(task));
     const toggle = h('button', { class: 'ttitle', type: 'button', 'aria-expanded': String(isOpen) },
-      h('span', { class: 'chev', 'aria-hidden': 'true' }, '▶'), h('span', { class: 'ttext' }, task.title));
+      h('span', { class: 'chev', 'aria-hidden': 'true' }, '▶'), layer && iconEl(layer.id), h('span', { class: 'ttext' }, task.title));
     const card = h('article', { class: 'task' + (isOpen ? ' open' : '') + (done ? ' done' : '') + (task.hidden ? ' is-hidden' : ''), 'data-id': task.id, 'data-idx': idx },
       h('div', { class: 'thead' }, h('label', { class: 'tick' }, check), toggle, badges), body);
     toggle.addEventListener('click', () => {
@@ -522,7 +529,7 @@
       return h('button', { class: 'chip pick' + (ok ? '' : ' other'), type: 'button',
         title: ok ? 'Show on the map' : 'Not on this faction map: opens the base map',
         onclick: () => openLayer(l, faction) },
-        l.label, ok ? '' : ' (' + Object.keys(l.slugs).map((f) => M_.FACTIONS[f].split(' ')[0]).join('/') + ' only)');
+        iconEl(l.id), ' ' + l.label, ok ? '' : ' (' + Object.keys(l.slugs).map((f) => M_.FACTIONS[f].split(' ')[0]).join('/') + ' only)');
     }));
     if (hits.length === 1) openLayer(hits[0], faction);
   }
