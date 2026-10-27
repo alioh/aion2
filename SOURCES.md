@@ -22,3 +22,9 @@ Duty Missions, Nightmare boss challenge, Spend Odyle Energy, Dimensional Invasio
 ## Known gaps
 - Location is empty for Daeva Pass (not stated by any source) and is shown as "location not confirmed". Most sources give dungeon names but no NPC or menu path.
 - Whether Duty Missions are per character or per server is disputed between sources; the task text says so.
+
+## Second pass (requested sites)
+- gamers4.life, aion2hub.com, interactivemap.app and aion2t.com are databases/maps/timers. They confirm Monoliths, Strongholds and crafting exist but give **no daily/weekly routine or reset time**, so they are linked under Resources, not added as tasks.
+- aion2hub patch note 2026-09-02: Monoliths are siege targets in a scheduled Stronghold contest (level 50, item level 4,500, weekly event key). That is an event, not a daily task.
+- questlog.gg returned no readable content; aion2.app only listed aion2t.com pages. Both are in Resources as user-supplied.
+- No YouTube guide could be confirmed, so none is seeded. Add your own in the app.

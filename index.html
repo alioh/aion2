@@ -13,6 +13,7 @@
   <header class="topbar">
     <h1>AION 2 <span>Daily Tracker</span></h1>
     <div class="topbar-actions">
+      <button id="resBtn" class="icon-btn" type="button" aria-label="Resources" title="Resources">📚</button>
       <button id="themeBtn" class="icon-btn" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">🌙</button>
       <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings">⚙️</button>
     </div>
@@ -77,6 +78,8 @@
           <select name="resetType"><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
         </label>
       </div>
+      <label>Extra links (guides, videos, articles; one per line as <code>Label | URL</code> or just a URL)
+        <textarea name="links" rows="3" placeholder="My YouTube guide | https://youtube.com/watch?v=..."></textarea></label>
       <label>Source (optional note) <input name="source" maxlength="300"></label>
       <label class="check"><input name="verified" type="checkbox"> Verified against a source</label>
       <datalist id="catList"></datalist>
@@ -96,6 +99,23 @@
         <button class="btn primary" type="submit">Add</button>
       </form>
       <div class="actions"><button type="button" class="btn" data-close>Close</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="resDlg">
+    <div class="form">
+      <h2>Resources</h2>
+      <p class="note">Your reference library: databases, maps, timers, guides and videos. Add your own; they are saved and included in exports.</p>
+      <ul id="resList" class="reslist"></ul>
+      <form id="resAddForm" class="form" style="padding:0">
+        <input id="resLabel" placeholder="Label (optional)" maxlength="100" aria-label="Label">
+        <input id="resUrl" type="url" placeholder="https://..." required aria-label="URL">
+        <button class="btn primary" type="submit">Add resource</button>
+      </form>
+      <div class="actions">
+        <button type="button" class="btn" id="resRestore">Restore defaults</button>
+        <button type="button" class="btn" data-close>Close</button>
+      </div>
     </div>
   </dialog>
 

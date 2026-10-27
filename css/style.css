@@ -121,3 +121,11 @@ dialog::backdrop { background: rgba(0,0,0,.6); }
 @media (min-width: 700px) {
   .toolbar input[type=search] { flex: 2 1 260px; }
 }
+
+.links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.linkchip { font-size: .78rem; color: var(--accent2); background: var(--surface2); border: 1px solid var(--border); border-radius: 99px; padding: 3px 10px; text-decoration: none; overflow-wrap: anywhere; }
+.linkchip:hover { border-color: var(--accent2); }
+.reslist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 40dvh; overflow: auto; }
+.reslist li { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+.reslist a { color: var(--accent2); overflow-wrap: anywhere; min-width: 0; }
+code { background: var(--surface2); padding: 0 4px; border-radius: 4px; }

@@ -29,6 +29,12 @@ The default daily reset is **05:00 UTC, which is only a placeholder**. I found n
 
 To confirm it yourself: in game, hover an entry-counter tooltip (it shows "Daily recharge in" / "Weekly recharge in"), compare with the current time, then set the time, timezone and weekday in **Settings**. A button there applies the community value (07:00 UTC, Wednesday). Tick "I confirmed this reset time in-game" to hide the placeholder warning. Also check the official AION 2 site's notices.
 
+## Links, videos and resources
+
+- Every task has a primary **Guide** button plus any number of extra link chips. In **Manage tasks → Edit**, add one per line as `Label | URL` (or just a URL). YouTube links get a ▶ icon.
+- The **📚 Resources** button opens a library of databases, maps, timers and guides you can add to or remove from. It is saved and included in exports.
+- Only http(s) links are accepted.
+
 ## How resets work
 
 Each completion is stored as the date of the reset period in which you ticked it. A task counts as done only while that period is still current, so resets happen exactly at the configured time with no timers, work while the tab is closed, and are DST-safe. Weekly tasks use the configured weekday at the same time of day.

@@ -82,3 +82,21 @@ test('seed integrity: unique ids, https guide URLs, valid reset types', () => {
     assert.equal(typeof t.verified, 'boolean');
   }
 });
+
+test('links: parsing, YouTube label, unsafe URLs dropped', () => {
+  const l = S.parseLinks('Vid | https://www.youtube.com/watch?v=abc\nhttps://youtu.be/xyz\nbad | javascript:alert(1)\nhttps://games.gg/x');
+  assert.deepStrictEqual(l.map((x) => x.label), ['Vid', 'YouTube video', 'games.gg']);
+  assert.equal(S.linksToText(l).split('\n').length, 3);
+});
+
+test('round-trip keeps links and resources; old backups get seed links', () => {
+  const st = S.defaultState(SEED, SEED.RESOURCES);
+  assert.ok(st.resources.length > 10);
+  st.tasks[0].links.push({ label: 'Mine', url: 'https://example.com/v' });
+  assert.deepStrictEqual(S.normalize(JSON.parse(JSON.stringify(st)), SEED, SEED.RESOURCES), st);
+  const old = JSON.parse(JSON.stringify(st));
+  delete old.resources; old.tasks.forEach((t) => delete t.links);
+  const mig = S.normalize(old, SEED, SEED.RESOURCES);
+  assert.ok(mig.resources.length === st.resources.length);
+  assert.ok(mig.tasks.find((t) => t.id === 'duty-missions').links.length >= 1);
+});

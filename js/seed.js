@@ -63,6 +63,56 @@
       location: '', guideUrl: M + 'daeva-pass', source: 'M only' },
   ];
 
+  // Extra reference links per task (all URLs seen in fetched/search results; no videos could be confirmed).
+  const H = 'https://aion2hub.com/database/';
+  const EXTRA = {
+    'duty-missions': [
+      { label: 'games.gg Duty Missions guide', url: 'https://games.gg/aion-2/guides/aion-2-duty-missions-guide/' },
+      { label: 'MeinMMO checklist', url: MM },
+    ],
+    'nightmare': [{ label: 'aion2hub Nightmare database', url: H + 'nightmare' }],
+    'odyle-energy': [
+      { label: 'aion2hub: Draupnir', url: H + 'instance/draupnir' },
+      { label: 'aion2hub: Ferocious Horn Den', url: H + 'instance/ferocious-horn-den' },
+    ],
+    'exploration': [
+      { label: 'aion2hub: Krao Cave', url: H + 'instance/krao-cave' },
+      { label: 'aion2hub: Urugugu Canyon', url: H + 'instance/urugugu-canyon' },
+    ],
+    'raid-ludra': [{ label: 'aion2hub: Abyssal Forge: Ludra', url: H + 'instance/abyssal-forge-ludra' }],
+    'daily-dungeon': [{ label: 'MeinMMO checklist', url: MM }],
+    'ascension-trial': [{ label: 'MeinMMO checklist', url: MM }],
+  };
+  for (const t of SEED_TASKS) t.links = EXTRA[t.id] || [];
+
+  // General reference library (editable in the app under "Resources").
+  const SEED_RESOURCES = [
+    { label: 'metabot.gg: Daily & weekly checklist', url: M + 'guides/daily-weekly-checklist' },
+    { label: 'metabot.gg: Weekly reset times', url: M + 'weekly-reset' },
+    { label: 'games.gg: Daily & weekly checklist', url: 'https://games.gg/aion-2/guides/aion-2-daily-weekly-checklist/' },
+    { label: 'MeinMMO: Daily & weekly checklist', url: MM },
+    { label: 'SkyCoach: Checklist guide', url: 'https://skycoach.gg/blog/aion-2/articles/checklist-guide' },
+    { label: 'KeenGamer: What to do before each reset', url: 'https://www.keengamer.com/articles/guides/aion-2-daily-and-weekly-checklist-what-to-do-before-each-reset/' },
+    { label: 'playnews.gg: Reset time guide', url: 'https://www.playnews.gg/en/guides/aion-2-daily-and-weekly-reset-what-time-is-it-for-you-and-what-does-it-refill' },
+    { label: 'aion2hub: Event / Rift timer', url: 'https://aion2hub.com/tools/event-timer' },
+    { label: 'aion2hub: World boss timers', url: 'https://aion2hub.com/tools/world-bosses' },
+    { label: 'aion2hub: Season calendar', url: 'https://aion2hub.com/tools/seasons' },
+    { label: 'aion2hub: Monoliths database', url: 'https://aion2hub.com/database/monoliths' },
+    { label: 'aion2hub: Patch note 2026-09-02 (Stronghold / Monolith contest)', url: 'https://aion2hub.com/updates/aion-2-update-2026-09-02' },
+    { label: 'aion2hub: Crafting calculator', url: 'https://aion2hub.com/tools/crafting-calculator' },
+    { label: 'Gamers4Life: Quests database', url: 'https://gamers4.life/aion-2/database/en/quests/' },
+    { label: 'Gamers4Life: Dungeons database', url: 'https://gamers4.life/aion-2/database/en/dungeons/' },
+    { label: 'Gamers4Life: World objects (incl. Monoliths)', url: 'https://gamers4.life/aion-2/database/en/world-objects/' },
+    { label: 'Gamers4Life: Crafting calculator', url: 'https://gamers4.life/aion-2/database/en/crafting-calculator/' },
+    { label: 'Interactive map: Verteron strongholds', url: 'https://interactivemap.app/aion2/maps/verteron/stronghold' },
+    { label: 'Interactive map: Verteron', url: 'https://interactivemap.app/aion2/maps/verteron' },
+    { label: 'aion2t.com: Guides', url: 'https://aion2t.com/guides' },
+    { label: 'aion2t.com: Crafting', url: 'https://aion2t.com/crafting' },
+    { label: 'QuestLog AION 2 (added by request; could not be read for research)', url: 'https://questlog.gg/aion-2/en' },
+    { label: 'aion2.app (added by request)', url: 'https://aion2.app/' },
+  ];
+
   root.SEED_TASKS = SEED_TASKS;
-  if (typeof module !== 'undefined' && module.exports) module.exports = SEED_TASKS;
+  root.SEED_RESOURCES = SEED_RESOURCES;
+  if (typeof module !== 'undefined' && module.exports) { module.exports = SEED_TASKS; module.exports.RESOURCES = SEED_RESOURCES; }
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -22,6 +22,38 @@
     } catch (e) { return ''; }
   }
 
+  function cleanLinks(arr, max) {
+    if (!Array.isArray(arr)) return [];
+    const out = [];
+    for (const l of arr) {
+      if (!l || typeof l !== 'object') continue;
+      const url = safeUrl(l.url);
+      if (!url) continue;
+      out.push({ label: str(l.label, 100).trim() || linkLabel(url), url });
+      if (out.length >= (max || 20)) break;
+    }
+    return out;
+  }
+
+  function linkLabel(url) {
+    try {
+      const host = new URL(url).hostname.replace(/^www\./, '');
+      return /(^|\.)(youtube\.com|youtu\.be)$/.test(host) ? 'YouTube video' : host;
+    } catch (e) { return 'Link'; }
+  }
+
+  /** "Label | URL" or bare URL, one per line. */
+  function parseLinks(text) {
+    return cleanLinks(String(text || '').split(/\r?\n/).map((line) => {
+      const i = line.lastIndexOf('|');
+      return i >= 0 ? { label: line.slice(0, i), url: line.slice(i + 1).trim() } : { label: '', url: line.trim() };
+    }));
+  }
+
+  function linksToText(links) {
+    return (links || []).map((l) => l.label + ' | ' + l.url).join('\n');
+  }
+
   function cleanTask(t, custom) {
     return {
       id: str(t.id, 100) || uid('c'),
@@ -33,6 +65,7 @@
       resetType: RESET_TYPES.includes(t.resetType) ? t.resetType : 'daily',
       verified: t.verified === true,
       source: str(t.source, 300),
+      links: cleanLinks(t.links),
       hidden: t.hidden === true,
       custom: custom === undefined ? t.custom === true : custom,
     };
@@ -40,7 +73,7 @@
 
   function seedTasks(seed) { return seed.map((t) => cleanTask(t, false)); }
 
-  function defaultState(seed) {
+  function defaultState(seed, resources) {
     const c = { id: uid('ch'), name: 'Character 1' };
     return {
       version: VERSION,
@@ -49,16 +82,17 @@
       activeCharId: c.id,
       tasks: seedTasks(seed),
       completions: {},
+      resources: cleanLinks(resources, 200),
       ui: { category: 'all', status: 'all', hideCompleted: false },
     };
   }
 
   /** Coerce any parsed JSON into a valid state. Throws on unusable input. */
-  function normalize(raw, seed) {
+  function normalize(raw, seed, resources) {
     if (!raw || typeof raw !== 'object' || !Array.isArray(raw.tasks) || !Array.isArray(raw.characters)) {
       throw new Error('Not an AION 2 tracker backup.');
     }
-    const d = defaultState(seed);
+    const d = defaultState(seed, resources);
     const rs = raw.settings || {};
     const settings = {
       resetTime: /^\d{1,2}:\d{2}$/.test(rs.resetTime) ? rs.resetTime : d.settings.resetTime,
@@ -85,6 +119,11 @@
     for (const t of raw.tasks) {
       if (!t || typeof t !== 'object') continue;
       const ct = cleanTask(t);
+      // Backups from before links existed: fill default tasks' links from the seed.
+      if (!Array.isArray(t.links) && !ct.custom) {
+        const sd = seed.find((x) => x.id === ct.id);
+        if (sd) ct.links = cleanLinks(sd.links);
+      }
       if (tseen.has(ct.id)) continue;
       tseen.add(ct.id);
       tasks.push(ct);
@@ -101,6 +140,8 @@
       }
     }
 
+    const resList = Array.isArray(raw.resources) ? cleanLinks(raw.resources, 200) : d.resources;
+
     const ru = raw.ui || {};
     const ui = {
       category: str(ru.category, 60) || 'all',
@@ -108,10 +149,10 @@
       hideCompleted: ru.hideCompleted === true,
     };
     const activeCharId = characters.some((c) => c.id === raw.activeCharId) ? raw.activeCharId : characters[0].id;
-    return { version: VERSION, settings, characters, activeCharId, tasks, completions, ui };
+    return { version: VERSION, settings, characters, activeCharId, tasks, completions, resources: resList, ui };
   }
 
-  const api = { STORAGE_KEY, VERSION, uid, safeUrl, cleanTask, seedTasks, defaultState, normalize };
+  const api = { STORAGE_KEY, VERSION, uid, safeUrl, cleanLinks, parseLinks, linksToText, cleanTask, seedTasks, defaultState, normalize };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.AionStore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

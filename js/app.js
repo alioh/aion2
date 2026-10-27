@@ -29,9 +29,9 @@
   function load() {
     try {
       const raw = localStorage.getItem(S.STORAGE_KEY);
-      if (raw) return S.normalize(JSON.parse(raw), window.SEED_TASKS);
+      if (raw) return S.normalize(JSON.parse(raw), window.SEED_TASKS, window.SEED_RESOURCES);
     } catch (e) { /* fall through to defaults */ }
-    return S.defaultState(window.SEED_TASKS);
+    return S.defaultState(window.SEED_TASKS, window.SEED_RESOURCES);
   }
 
   function save() {
@@ -147,6 +147,10 @@
       ? h('a', { class: 'btn guide', href: task.guideUrl, target: '_blank', rel: 'noopener noreferrer' }, 'Guide ↗')
       : h('span', { class: 'btn guide disabled', 'aria-disabled': 'true' }, 'No guide');
 
+    const extra = task.links.length && h('div', { class: 'links' },
+      ...task.links.map((l) => h('a', { class: 'linkchip', href: l.url, target: '_blank', rel: 'noopener noreferrer' },
+        /youtu/.test(l.url) ? '▶ ' : '🔗 ', l.label)));
+
     const tools = manage && h('div', { class: 'tools' },
       h('button', { class: 'btn sm', type: 'button', disabled: pos === 0, 'aria-label': 'Move up', onclick: () => move(task, -1) }, '↑'),
       h('button', { class: 'btn sm', type: 'button', disabled: pos === sameType.length - 1, 'aria-label': 'Move down', onclick: () => move(task, 1) }, '↓'),
@@ -161,7 +165,8 @@
         badges,
         task.description && h('p', { class: 'desc' }, task.description),
         loc,
-        h('div', { class: 'row-actions' }, guide, tools)));
+        h('div', { class: 'row-actions' }, guide, tools),
+        extra));
   }
 
   function renderList() {
@@ -231,6 +236,7 @@
     $('taskDlgTitle').textContent = task ? 'Edit task' : 'Add task';
     const t = task || { title: '', description: '', location: '', guideUrl: '', category: '', resetType: 'daily', source: '', verified: false };
     for (const k of ['title', 'description', 'location', 'guideUrl', 'category', 'resetType', 'source']) f.elements[k].value = t[k] || '';
+    f.elements.links.value = S.linksToText(t.links);
     f.elements.verified.checked = !!t.verified;
     $('taskDlg').showModal();
   }
@@ -242,7 +248,7 @@
     if (url && !S.safeUrl(url)) { f.guideUrl.setCustomValidity('Enter a full http(s) URL'); f.guideUrl.reportValidity(); f.guideUrl.setCustomValidity(''); return; }
     const data = {
       title: f.title.value, description: f.description.value, location: f.location.value, guideUrl: url,
-      category: f.category.value, resetType: f.resetType.value, source: f.source.value, verified: f.verified.checked,
+      category: f.category.value, resetType: f.resetType.value, source: f.source.value, verified: f.verified.checked, links: S.parseLinks(f.links.value),
     };
     if (editing) Object.assign(editing, S.cleanTask({ ...editing, ...data }));
     else state.tasks.push(S.cleanTask({ ...data, id: S.uid('c'), custom: true }, true));
@@ -280,6 +286,30 @@
   });
   $('charsBtn').addEventListener('click', () => { renderChars(); $('charDlg').showModal(); });
   $('charSelect').addEventListener('change', (e) => { state.activeCharId = e.target.value; save(); render(); });
+
+  // ---------- resources ----------
+  function renderResources() {
+    $('resList').replaceChildren(...state.resources.map((r, i) => h('li', {},
+      h('a', { href: r.url, target: '_blank', rel: 'noopener noreferrer' }, (/youtu/.test(r.url) ? '▶ ' : '🔗 ') + r.label),
+      h('button', { class: 'btn sm danger', type: 'button', 'aria-label': 'Remove ' + r.label,
+        onclick: () => { state.resources.splice(i, 1); save(); renderResources(); } }, '✕'))));
+    if (!state.resources.length) $('resList').append(h('li', { class: 'note' }, 'No resources yet.'));
+  }
+  $('resBtn').addEventListener('click', () => { renderResources(); $('resDlg').showModal(); });
+  $('resAddForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const url = S.safeUrl($('resUrl').value);
+    if (!url) { $('resUrl').setCustomValidity('Enter a full http(s) URL'); $('resUrl').reportValidity(); $('resUrl').setCustomValidity(''); return; }
+    state.resources.push(S.cleanLinks([{ label: $('resLabel').value, url }])[0]);
+    $('resLabel').value = ''; $('resUrl').value = '';
+    save(); renderResources();
+  });
+  $('resRestore').addEventListener('click', () => {
+    if (!confirm('Add back any default resources you removed?')) return;
+    const have = new Set(state.resources.map((r) => r.url));
+    state.resources.push(...S.cleanLinks(window.SEED_RESOURCES, 200).filter((r) => !have.has(r.url)));
+    save(); renderResources();
+  });
 
   // ---------- settings ----------
   function timezones() {
@@ -333,7 +363,7 @@
     e.target.value = '';
     if (!file) return;
     try {
-      const next = S.normalize(JSON.parse(await file.text()), window.SEED_TASKS);
+      const next = S.normalize(JSON.parse(await file.text()), window.SEED_TASKS, window.SEED_RESOURCES);
       if (!confirm('Replace ALL current data with the contents of "' + file.name + '"?')) return;
       state = next; save(); applyTheme(); openSettings();
       $('sMsg').textContent = 'Imported ' + state.characters.length + ' character(s) and ' + state.tasks.length + ' task(s).';
@@ -347,7 +377,7 @@
   });
   $('wipeBtn').addEventListener('click', () => {
     if (!confirm('Erase ALL data (characters, progress, tasks, settings)?')) return;
-    state = S.defaultState(window.SEED_TASKS); save(); applyTheme(); openSettings(); render();
+    state = S.defaultState(window.SEED_TASKS, window.SEED_RESOURCES); save(); applyTheme(); openSettings(); render();
   });
 
   // ---------- wiring ----------
