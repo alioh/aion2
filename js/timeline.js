@@ -166,10 +166,21 @@
       r.status.replaceChildren(...(showCd
         ? [open ? 'Ends in ' : 'Next in ', h('b', { class: open ? 'closes' : '' }, fmtCd(open ? cur.e - now : nxt.s - now))]
         : [open ? 'Open' : 'Closed']));
-      r.track.replaceChildren(...occ.filter((o) => o.e > now && o.s < end).map((o) => {
+      // Blocks are kept between ticks (matched by start time) so the hover tooltip is not reset every second.
+      const blocks = r.blocks || (r.blocks = new Map()), seen = new Set();
+      for (const o of occ) {
+        if (o.e <= now || o.s >= end) continue;
+        seen.add(o.s);
+        let el = blocks.get(o.s);
+        if (!el) { el = h('span', { class: 'blk' }); blocks.set(o.s, el); r.track.append(el); }
         const l = Math.max(0, pct(o.s)), w = Math.min(100, pct(o.e)) - l;
-        return h('span', { class: 'blk' + (o.s <= now ? ' run' : ''), style: 'left:' + l + '%;width:max(' + w + '%,6px)' });
-      }));
+        el.style.left = l + '%';
+        el.style.width = 'max(' + w + '%, 6px)';
+        el.classList.toggle('run', o.s <= now);
+        const tip = dayLabel(o.s, now) + ' ' + hm(o.s) + ' – ' + hm(o.e) + ' ' + city;
+        if (el.title !== tip) el.title = tip;
+      }
+      for (const [k, el] of blocks) if (!seen.has(k)) { el.remove(); blocks.delete(k); }
       drawDetail(ev, now);
     }
   }

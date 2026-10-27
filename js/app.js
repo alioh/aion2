@@ -27,15 +27,26 @@
    *  Falls back to the map-layer icon, or nothing, when no file exists. */
   const ICON_EXT = ['png', 'svg', 'webp', 'jpg'];
   const slug = (t) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  // Which icon file exists is remembered for 30 minutes so a page load does not re-probe every file.
+  const ICON_TTL = 30 * 60000;
+  const iconCache = (() => { try { return JSON.parse(localStorage.getItem('aion2-icon-cache') || '{}'); } catch (e) { return {}; } })();
+  function rememberIcon(id, url) {
+    iconCache[id] = [url, Date.now()];
+    try { localStorage.setItem('aion2-icon-cache', JSON.stringify(iconCache)); } catch (e) { /* ignore */ }
+  }
   function taskIcon(task, fallback) {
-    const names = [...new Set([task.id, slug(task.title)])].filter(Boolean);
-    const urls = names.flatMap((n) => ICON_EXT.map((x) => 'icons/' + n + '.' + x));
     const wrap = h('span', { class: 'ticon', 'aria-hidden': 'true' });
+    const hit = iconCache[task.id];
+    if (hit && Date.now() - hit[1] < ICON_TTL && !hit[0]) { if (fallback) wrap.append(fallback); return wrap; }
+    const names = [...new Set(task.custom ? [task.id, slug(task.title)] : [task.id])].filter(Boolean);
+    const urls = names.flatMap((n) => ICON_EXT.map((x) => 'icons/' + n + '.' + x));
+    if (hit && hit[0] && Date.now() - hit[1] < ICON_TTL) urls.unshift(hit[0]);
     let i = 0;
-    const img = h('img', { alt: '', width: '22', height: '22', loading: 'lazy' });
+    const img = h('img', { alt: '', width: '22', height: '22' });
+    img.addEventListener('load', () => rememberIcon(task.id, urls[i]));
     img.addEventListener('error', () => {
       if (++i < urls.length) img.src = urls[i];
-      else { img.remove(); if (fallback) wrap.append(fallback); }
+      else { img.remove(); rememberIcon(task.id, ''); if (fallback) wrap.append(fallback); }
     });
     img.src = urls[0];
     wrap.append(img);
