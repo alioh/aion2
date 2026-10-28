@@ -210,3 +210,10 @@ code { background: var(--surface2); padding: 0 4px; border-radius: 4px; }
 
 .ticon { display: inline-flex; align-items: center; flex: none; }
 .ticon img { width: 22px; height: 22px; object-fit: contain; border-radius: 4px; }
+
+.about { display: grid; gap: 12px; max-width: 760px; }
+.about h2 { font-size: 1.05rem; margin: 0 0 8px; color: var(--accent); }
+.about p, .about li { color: var(--text); line-height: 1.55; font-size: .95rem; }
+.about ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 8px; }
+.about a { color: var(--accent); }
+.about-link { text-decoration: none; }
