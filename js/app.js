@@ -354,7 +354,7 @@
     $('serverTime').textContent = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(n);
     const sname = state.settings.serverName;
     $('serverLbl').textContent = (sname ? sname + ' \u00B7 ' : '') + tz.split('/').pop().replace('_', ' ');
-    if (window.AionTimeline) window.AionTimeline.configure({ tz, resetTime: state.settings.resetTime, weeklyDay: state.settings.weeklyDay });
+    if (window.AionTimeline) window.AionTimeline.configure({ tz, displayTz: state.settings.timezone, resetTime: state.settings.resetTime, weeklyDay: state.settings.weeklyDay });
     $('dailyCd').textContent = T.formatCountdown(T.nextReset('daily', n, cfg()) - n);
     $('weeklyCd').textContent = T.formatCountdown(T.nextReset('weekly', n, cfg()) - n);
     const k = key('daily') + '|' + key('weekly');

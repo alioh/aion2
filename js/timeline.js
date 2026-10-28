@@ -1,5 +1,5 @@
-/* Experimental event timeline. Reads the server region from the tracker's saved settings
- * (read-only) and draws the next 12/24/48 hours of recurring events on the server clock. */
+/* Event timeline. The event schedule is on the server region's clock (stz); the times are shown in the
+ * display timezone (dtz) unless "Server time" is ticked, then they are shown on the server clock too. */
 (function () {
   'use strict';
   const T = window.AionTime;
@@ -18,15 +18,19 @@
   }
 
   // ---------- config (pushed in by the tracker) ----------
-  let tz = 'Europe/Berlin', resetTime = '07:00', weeklyDay = 3;
+  let stz = 'Europe/Berlin', dtz = 'UTC', resetTime = '07:00', weeklyDay = 3;
+  let useServer = false;
+  let tz = dtz;                       // the zone the times are shown in
   let resetCfg = { resetTime, weeklyDay, timezone: 'UTC' };
-  let city = 'Berlin';
+  let city = 'UTC';
+  const cityOf = (z) => z.split('/').pop().replace('_', ' ');
+  function applyZone() { tz = useServer ? stz : dtz; city = cityOf(tz); }
   const nowMs = () => (typeof window.__AION_NOW === 'number' ? window.__AION_NOW : Date.now());
   function configure(c) {
-    tz = c.tz || tz; resetTime = c.resetTime || resetTime;
+    stz = c.tz || stz; dtz = c.displayTz || dtz; resetTime = c.resetTime || resetTime;
+    applyZone();
     weeklyDay = Number.isInteger(c.weeklyDay) ? c.weeklyDay : weeklyDay;
     resetCfg = { resetTime, weeklyDay, timezone: 'UTC' };
-    city = tz.split('/').pop().replace('_', ' ');
     tick();
   }
 
@@ -52,12 +56,12 @@
     const p = T.partsIn(ms, tz);
     return pad(p.h) + ':' + pad(p.mi);
   }
-  function occurrences(ev, now) {
-    const p = T.partsIn(now, tz), out = [];
+  function occurrences(ev, now) {      // the schedule always follows the server clock
+    const p = T.partsIn(now, stz), out = [];
     for (let d = -1; d <= 4; d++) {
       const day = new Date(Date.UTC(p.y, p.mo - 1, p.d + d));
       for (const [m, dur] of ev.win) {
-        const s = T.zonedToUtc(day.getUTCFullYear(), day.getUTCMonth() + 1, day.getUTCDate(), Math.floor(m / 60), m % 60, tz);
+        const s = T.zonedToUtc(day.getUTCFullYear(), day.getUTCMonth() + 1, day.getUTCDate(), Math.floor(m / 60), m % 60, stz);
         out.push({ s, e: s + dur * MIN });
       }
     }
@@ -119,7 +123,8 @@
     const shown = times.length > 8 ? times.slice(0, 8).join(', ') + ', …' : times.join(', ');
     const next = occurrences(ev, now).filter((o) => o.e > now).slice(0, 3);
     r.detail.replaceChildren(
-      h('div', { class: 'tl-meta' }, h('span', { class: 'tag' }, ev.tag), h('span', null, ev.days + ' · ' + shown + ' ' + city)),
+      h('div', { class: 'tl-meta' }, h('span', { class: 'tag' }, ev.tag),
+        h('span', null, ev.days + ' · ' + shown + ' ' + cityOf(stz) + (tz !== stz ? ' (server time). Next times in ' + city + ':' : ''))),
       h('p', null, ev.text),
       h('div', { class: 'tl-cards' }, next.map((o) => {
         const live = o.s <= now;
@@ -135,9 +140,10 @@
     const pct = (t) => ((t - now) / span) * 100;
 
     $('rangeTxt').textContent = range;
+    $('tlZone').textContent = city + (useServer ? ' (server time)' : '');
     $('tlScroll').style.setProperty('--hours', range);
 
-    // axis ticks on whole hours of the server clock
+    // axis ticks on whole hours of the shown clock
     const lp = T.partsIn(now, tz), localNow = Date.UTC(lp.y, lp.mo - 1, lp.d, lp.h, lp.mi, lp.s), off = localNow - now;
     const step = range <= 12 ? 2 : range <= 24 ? 4 : 8;
     const ticks = [];
@@ -148,7 +154,7 @@
     }
     axisEl.replaceChildren(h('span', { class: 'tl-tick now', style: 'left:0%' }, 'NOW'), ...ticks);
 
-    // vertical lines: midnight (server clock) and next reset
+    // vertical lines: midnight (shown clock) and next reset
     const lines = [];
     for (let l = Math.ceil(localNow / (24 * H)) * 24 * H; l - off < end; l += 24 * H) {
       lines.push(h('span', { class: 'vline mid', style: 'left:' + pct(l - off) + '%' }, h('em', null, 'Tomorrow')));
@@ -201,6 +207,16 @@
     showCd = cd.checked;
     try { localStorage.setItem('aion2-timeline-cd', showCd ? '1' : '0'); } catch (e) { /* ignore */ }
     tick();
+  });
+
+  const sv = $('srvToggle');
+  try { useServer = localStorage.getItem('aion2-timeline-server') === '1'; } catch (e) { /* ignore */ }
+  sv.checked = useServer;
+  applyZone();
+  sv.addEventListener('change', () => {
+    useServer = sv.checked;
+    try { localStorage.setItem('aion2-timeline-server', useServer ? '1' : '0'); } catch (e) { /* ignore */ }
+    applyZone(); tick();
   });
 
   buildRows(); markRange(); syncOpen(); tick();

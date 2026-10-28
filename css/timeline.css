@@ -56,6 +56,7 @@
 .tl-head { gap: 10px; flex-wrap: wrap; }
 .tl-title { margin-right: auto; }
 .tl-src { color: var(--accent); text-decoration: none; margin-left: 4px; }
+.tl-zone { margin-left: 6px; color: var(--accent); font-weight: 600; letter-spacing: 0; }
 .tl-cd { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; color: var(--muted); cursor: pointer; }
 .tl-chev { justify-self: center; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg) translate(-2px, -2px); transition: transform .15s; }
 .tl-item.open .tl-chev { transform: rotate(-135deg) translate(-2px, -2px); }
