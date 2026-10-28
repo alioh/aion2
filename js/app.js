@@ -34,23 +34,32 @@
     iconCache[id] = [url, Date.now()];
     try { localStorage.setItem('aion2-icon-cache', JSON.stringify(iconCache)); } catch (e) { /* ignore */ }
   }
-  function taskIcon(task, fallback) {
+  /** Tries icons/<dir><name>.<ext> for each name; shows `fallback` (if any) when none exists. `key` names the cache entry. */
+  function fileIcon(key, dir, names, fallback) {
     const wrap = h('span', { class: 'ticon', 'aria-hidden': 'true' });
-    const hit = iconCache[task.id];
+    const hit = iconCache[key];
     if (hit && Date.now() - hit[1] < ICON_TTL && !hit[0]) { if (fallback) wrap.append(fallback); return wrap; }
-    const names = [...new Set(task.custom ? [task.id, slug(task.title)] : [task.id])].filter(Boolean);
-    const urls = names.flatMap((n) => ICON_EXT.map((x) => 'icons/' + n + '.' + x));
+    const urls = names.filter(Boolean).flatMap((n) => ICON_EXT.map((x) => 'icons/' + dir + n + '.' + x));
     if (hit && hit[0] && Date.now() - hit[1] < ICON_TTL) urls.unshift(hit[0]);
     let i = 0;
     const img = h('img', { alt: '', width: '22', height: '22' });
-    img.addEventListener('load', () => rememberIcon(task.id, urls[i]));
+    img.addEventListener('load', () => rememberIcon(key, urls[i]));
     img.addEventListener('error', () => {
       if (++i < urls.length) img.src = urls[i];
-      else { img.remove(); rememberIcon(task.id, ''); if (fallback) wrap.append(fallback); }
+      else { img.remove(); rememberIcon(key, ''); if (fallback) wrap.append(fallback); }
     });
     img.src = urls[0];
     wrap.append(img);
     return wrap;
+  }
+  function taskIcon(task, fallback) {
+    return fileIcon(task.id, '', [...new Set(task.custom ? [task.id, slug(task.title)] : [task.id])], fallback);
+  }
+  /** Icon for a step item: icons/items/<name>.png, name = the item text in lowercase with dashes, brackets ignored. */
+  const itemSlug = (t) => slug(t.replace(/\(.*?\)/g, ''));
+  function itemIcon(text) {
+    const s = itemSlug(text);
+    return fileIcon('item:' + s, 'items/', [s], h('span', { class: 'dotmark' }, '\u2022'));
   }
 
   function iconEl(id) {
@@ -252,10 +261,17 @@
     $('toggleAll').textContent = vis.length && vis.every((t) => openIds.has(t.id)) ? 'Collapse all' : 'Expand all';
   }
 
+  /** A step line starting with "- " is an item under the step before it (shown as a list, with an optional icon). */
   function stepsSection(task) {
     if (!task.steps.length) return null;
-    return h('details', { class: 'steps' }, h('summary', {}, 'How to complete (' + task.steps.length + ' steps)'),
-      h('ol', {}, ...task.steps.map((x) => h('li', {}, x))));
+    const groups = [];
+    for (const line of task.steps) {
+      if (/^-\s+/.test(line) && groups.length) groups[groups.length - 1].items.push(line.replace(/^-\s+/, ''));
+      else groups.push({ text: line.replace(/^-\s+/, ''), items: [] });
+    }
+    return h('details', { class: 'steps' }, h('summary', {}, 'How to complete (' + groups.length + ' steps)'),
+      h('ol', {}, ...groups.map((g) => h('li', {}, g.text,
+        g.items.length > 0 && h('ul', { class: 'substeps' }, ...g.items.map((it) => h('li', {}, itemIcon(it), h('span', {}, it))))))));
   }
 
   function videoSection(task) {

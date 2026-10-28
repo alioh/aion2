@@ -19,7 +19,7 @@
   const PATCH = 'https://aion2.plaync.com/en-us/board/update/view?articleId=6ae19668577e8c01355e0210';
   const yt = (id, label) => ({ label, url: 'https://www.youtube.com/watch?v=' + id });
 
-  const SEED_REV = 10;
+  const SEED_REV = 11;
 
   const SEED_TASKS = [
     // ---- Daily ----
@@ -28,7 +28,13 @@
       location: 'Journal / map: Duty tab', guideUrl: A + 'daily-and-weekly/', source: 'A, M, MM, U (per server confirmed by owner); R (refresh cap and pick order)',
       steps: [
         'Open the Journal (J), Duty tab, Mission tab (unlocks at level 45). Do 5 a day in total, shared by all characters on the server.',
-        'Prefer quests with a reward in the first three slots (the first slot always pays): 1) Nightmare Dungeon Challenge Ticket, 2) Shugo Festival Reward Key, 3) Ascension Trial Challenge Ticket, 4) Hidden Cube key, 5) Small Odyle Energy (10), 6) Unknown Fissure Challenge Ticket.',
+        'Prefer quests with a reward in the first three slots (the first slot always pays). Best first:',
+        '- Nightmare Dungeon Challenge Ticket',
+        '- Shugo Festival Reward Key',
+        '- Ascension Trial Challenge Ticket',
+        '- Hidden Cube key',
+        '- Small Odyle Energy (10)',
+        '- Unknown Fissure Challenge Ticket',
         'Fill the rest of your 5 with any quest. Abandon a weak quest instead of finishing it if a better one is on offer.',
         'Refresh at most 6 times a day, and only when no quest shows a key or ticket in its first three slots.',
       ],

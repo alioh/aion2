@@ -44,6 +44,21 @@ Put your own image for a task in this folder and it shows next to the task title
 
 **Tasks you add yourself:** name the file after the title in lowercase with dashes, for example `my-task.png` for a task called "My task".
 
-If there is no file, the task shows the small map icon (if it has a map layer) or no icon.
+## Icons for items inside a task's steps
+
+A step line that starts with `- ` is shown as a list item under the step before it (in **Manage tasks, Edit, How to complete**), and it can have an icon. Put the image in **`icons/items/`**, named after the item text in lowercase with dashes (anything in brackets is ignored). The Duty Missions list uses:
+
+| File | Item |
+|---|---|
+| `items/nightmare-dungeon-challenge-ticket.png` | Nightmare Dungeon Challenge Ticket |
+| `items/shugo-festival-reward-key.png` | Shugo Festival Reward Key |
+| `items/ascension-trial-challenge-ticket.png` | Ascension Trial Challenge Ticket |
+| `items/hidden-cube-key.png` | Hidden Cube key |
+| `items/small-odyle-energy.png` | Small Odyle Energy (10) |
+| `items/unknown-fissure-challenge-ticket.png` | Unknown Fissure Challenge Ticket |
+
+Without a file the item shows a small dot.
+
+If there is no task file, the task shows the small map icon (if it has a map layer) or no icon.
 
 Only add images you have the right to use. This repository is public, so anything you put here is published with it.
