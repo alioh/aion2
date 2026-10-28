@@ -312,7 +312,6 @@
   }
 
   function renderNote() {
-    $('resetWhen').textContent = resetSummary(state.settings.serverTz).replace(/ \(\d\d:\d\d UTC\)/, '');
     $('resetNote').hidden = !saveError;
     $('resetNote').textContent = saveError ? '\u26A0 Could not save to browser storage. Export a backup.' : '';
   }
