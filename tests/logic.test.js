@@ -216,3 +216,11 @@ test('settings: the server region decides the event clock; old saves are mapped'
   assert.strictEqual(b.serverName, 'Ariel');
   assert.strictEqual(load({ serverTz: 'UTC' }).serverRegion, 'europe');
 });
+
+test('mode: every seed task is PvE, PvP or both; unknown values fall back to PvE', () => {
+  for (const t of SEED) assert.ok(t.mode === undefined || ['pve', 'pvp', 'both'].includes(t.mode), t.id);
+  const pvp = SEED.filter((t) => t.mode === 'pvp').map((t) => t.id);
+  assert.ok(pvp.includes('arena-battlefield') && pvp.includes('abyss-commands'));
+  assert.strictEqual(S.cleanTask({ title: 'x', mode: 'nope' }).mode, 'pve');
+  assert.strictEqual(S.cleanTask({ title: 'x', mode: 'both' }).mode, 'both');
+});

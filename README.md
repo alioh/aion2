@@ -40,7 +40,7 @@ Each completion is stored as the date of the reset period in which you ticked it
 ## Editing the seed tasks
 
 - In the app: switch on **Manage tasks** to edit, hide, delete and reorder (↑/↓). **+ Add task** creates your own. **Settings → Reset default tasks** restores the original list (your custom tasks are kept).
-- In the code: edit `js/seed.js`. Each task has `id`, `title`, `description`, `location`, `guideUrl`, `category`, `resetType` (`"daily"`/`"weekly"`), `verified`, `scope` (`"character"`/`"server"`), `resetType` (`"daily"`/`"weekly"`/`"once"`), plus optional `source`, `steps`, `links` and `videos`. Leave a field empty if you cannot confirm it and set `verified: false`; the UI shows an "unverified" badge. Bump `SEED_REV` in `js/seed.js` after editing: on next load the app refreshes default tasks for existing users, adds new ones and removes retired ones (custom tasks, hidden flags and progress are kept; edits to default tasks are replaced).
+- In the code: edit `js/seed.js`. Each task has `id`, `title`, `description`, `location`, `guideUrl`, `category`, `resetType` (`"daily"`/`"weekly"`), `verified`, `scope` (`"character"`/`"server"`), `mode` (`"pve"` default, `"pvp"` or `"both"`, shown as a PvE/PvP badge and used by the mode filter), `resetType` (`"daily"`/`"weekly"`/`"once"`), plus optional `source`, `steps`, `links` and `videos`. Leave a field empty if you cannot confirm it and set `verified: false` (kept as a note for maintainers; the page no longer shows a badge for it). Bump `SEED_REV` in `js/seed.js` after editing: on next load the app refreshes default tasks for existing users, adds new ones and removes retired ones (custom tasks, hidden flags and progress are kept; edits to default tasks are replaced).
 
 ## Tests
 

@@ -7,8 +7,8 @@
   <meta name="description" content="Personal daily and weekly task tracker for AION 2, per character. Unofficial fan tool.">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a2f45'/%3E%3Cpath d='M9 17l5 5 9-12' fill='none' stroke='%237ee0c3' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css?v=41">
-  <link rel="stylesheet" href="css/timeline.css?v=41">
+  <link rel="stylesheet" href="css/style.css?v=43">
+  <link rel="stylesheet" href="css/timeline.css?v=43">
 </head>
 <body>
   <header class="topbar">
@@ -72,6 +72,11 @@
     <section class="toolbar" aria-label="Filters">
       <input id="search" type="search" placeholder="Search title, description, location" aria-label="Search tasks">
       <select id="fCategory" aria-label="Filter by category"></select>
+      <select id="fMode" aria-label="Filter by PvE or PvP">
+        <option value="all">PvE + PvP</option>
+        <option value="pve">PvE</option>
+        <option value="pvp">PvP</option>
+      </select>
       <select id="fStatus" aria-label="Filter by status">
         <option value="all">All</option>
         <option value="todo">Not done</option>
@@ -87,7 +92,7 @@
 
     <footer class="foot">
       Unofficial fan tool, not affiliated with NCSoft. AION is a trademark of NCSoft. Task info comes from community guides and may be out of date;
-      tasks marked <span class="badge warn">unverified</span> could not be confirmed against two sources.
+      check the source notes (SOURCES.md) and confirm figures in game.
     </footer>
   </main>
 
@@ -127,6 +132,9 @@
       </div>
       <label>Map layer (adds a "Map" button to the task)
         <select name="mapLayer" id="mapLayerSel"></select>
+      </label>
+      <label>Content type
+        <select name="mode"><option value="pve">PvE</option><option value="pvp">PvP</option><option value="both">PvE and PvP</option></select>
       </label>
       <label>Limit is
         <select name="scope"><option value="character">Per character</option><option value="server">Per server (shared by all characters)</option></select>
@@ -207,12 +215,12 @@
     </div>
   </dialog>
 
-  <script src="js/seed.js?v=41"></script>
-  <script src="js/servers.js?v=41"></script>
-  <script src="js/time.js?v=41"></script>
-  <script src="js/store.js?v=41"></script>
-  <script src="js/maps.js?v=41"></script>
-  <script src="js/timeline.js?v=41"></script>
-  <script src="js/app.js?v=41"></script>
+  <script src="js/seed.js?v=43"></script>
+  <script src="js/servers.js?v=43"></script>
+  <script src="js/time.js?v=43"></script>
+  <script src="js/store.js?v=43"></script>
+  <script src="js/maps.js?v=43"></script>
+  <script src="js/timeline.js?v=43"></script>
+  <script src="js/app.js?v=43"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
  * verified = true  -> essentials confirmed by 2+ independent sources (or by the user in game).
  * verified = false -> single source, or sources disagree (see `source`). Shown with an "unverified" badge.
  * An empty field means it could not be confirmed. Nothing here is invented.
+ * mode: "pve" (default) | "pvp" | "both" - shown as a PvE / PvP badge and used by the mode filter.
  * scope: "character" (own limit per character) or "server" (shared by every character on the server).
  * resetType: "daily" | "weekly" | "once" (one-time/ongoing progression, never resets).
  * Sources: A = aion2maps.com guides (updated Oct 23-26 2026), M = metabot.gg checklist, MM = mein-mmo.de,
@@ -18,7 +19,7 @@
   const PATCH = 'https://aion2.plaync.com/en-us/board/update/view?articleId=6ae19668577e8c01355e0210';
   const yt = (id, label) => ({ label, url: 'https://www.youtube.com/watch?v=' + id });
 
-  const SEED_REV = 9;
+  const SEED_REV = 10;
 
   const SEED_TASKS = [
     // ---- Daily ----
@@ -98,7 +99,7 @@
       location: 'Deus Research Base, Shattered Arkanis', guideUrl: A + 'transcendence/', source: 'A, M',
       links: [{ label: 'RaidRelay: Transcendence guide', url: R + 'aion-2-transcendence-guide' }, { label: 'metabot.gg: Deus Research Base', url: M + 'dungeons/deus-research-base' }, { label: 'metabot.gg: Shattered Arkanis', url: M + 'dungeons/shattered-arkanis' }],
       videos: [yt('VIJGZG8XrNc', 'selegames: Transcendence guide, Deus Research Base and Shattered Arkanis (Japanese)')] },
-    { id: 'abyss-time', title: 'Abyss time', category: 'Abyss', resetType: 'weekly', scope: 'character', verified: true,
+    { id: 'abyss-time', mode: 'both', title: 'Abyss time', category: 'Abyss', resetType: 'weekly', scope: 'character', verified: true,
       description: 'Weekly time allowance in the Abyss: 7 hours, resetting Wednesday with no carry-over. Global opens with Lower Reshanta only. One source says members get 14 hours; another says membership gives no extra Abyss time, so check in game.',
       location: 'Lower Reshanta (Abyss)', guideUrl: A + 'abyss/', source: 'A, M (membership bonus disputed)',
       links: [{ label: 'metabot.gg: Chaotic Lower Reshanta', url: M + 'map/chaotic-lower-reshanta' }], videos: [] },
@@ -114,7 +115,7 @@
       description: 'Buy and complete up to 12 Region Commands a week from the Command Merchant in your capital (15,000 Kina each; Altgard for Asmodians, Verteron for Elyos). From level 45. The limit is per server, shared by your characters; unused scrolls carry over past the reset. They do not count toward the 5 daily Duties, and each pays 1,000 Abyss Points. A scroll can be redrawn up to 10 times (the first 3 cost 6,400 Kina), but 3 or 4 redraws is plenty.',
       location: 'Command Merchant: Altgard (Nornir Assembly, Safe Haven) / Verteron (Zumion Village, Dawn Legion Base)', guideUrl: A + 'daily-and-weekly/', source: 'A, MM; R (prices, redraws)',
       links: [{ label: 'RaidRelay: Duty Quests guide (Commands)', url: R + 'aion-2-duty-quests-guide' }, { label: 'MeinMMO checklist', url: MM }], videos: [] },
-    { id: 'abyss-commands', title: 'Abyss Commands (Latesran Root)', category: 'Abyss', resetType: 'weekly', scope: 'server', verified: false,
+    { id: 'abyss-commands', mode: 'pvp', title: 'Abyss Commands (Latesran Root)', category: 'Abyss', resetType: 'weekly', scope: 'server', verified: false,
       description: 'Four grades of PvP Command scrolls, 5 of each per week (20 in total), shared by all your characters on the server. Bought at your faction\'s base in Chaotic Lower Reshanta (Latesran Eastern Root for Asmodians, Western Root for Elyos); the quests are in the Lower Abyss where the other faction can reach you. Each pays 1,000 Abyss Points plus Abyssal Power Shards.',
       location: 'Chaotic Lower Reshanta: your faction\'s base', guideUrl: R + 'aion-2-duty-quests-guide', source: 'R (single source; the combined 20-a-week limit also appears in A and MM)',
       steps: [
@@ -131,11 +132,11 @@
       description: 'Optional: up to 10 requests a week from level 25, paying 510 to 45,580 Abyss Points each, plus Enhance Stones. Silentium requests (20 / 30 / 50 Silentium) pay 3,210 / 5,410 / 9,980 AP. Crafted-gear requests need 7 pieces each. Boss-gear requests run all season. Crafting gear just for requests is generally not worth it; turn in leftover pieces instead.',
       location: 'Journal: Alt + J', guideUrl: R + 'aion-2-abyss-points-guide', source: 'R (single source)',
       links: [{ label: 'RaidRelay: Abyss Points guide', url: R + 'aion-2-abyss-points-guide' }], videos: [] },
-    { id: 'arena-battlefield', title: 'Arena and Battlefield weekly goals', category: 'Abyss', resetType: 'weekly', scope: 'character', verified: false,
+    { id: 'arena-battlefield', mode: 'pvp', title: 'Arena and Battlefield weekly goals', category: 'Abyss', resetType: 'weekly', scope: 'character', verified: false,
       description: 'Optional PvP goals for Abyss Points. Arena of Solitude (1v1) and Arena of Cooperation (5v5): 10 matches (300 AP each) and 30 wins (500 AP each) per week. Battlefield (10v10): 3 matches (1,000 AP each) and 3 wins (3,000 AP each), plus Silver Medals of Merit. Up to 48,000 AP a week in total. They also feed the Season Missions.',
       location: 'Arena / Battlefield matchmaking', guideUrl: R + 'aion-2-abyss-points-guide', source: 'R (single source)',
       links: [{ label: 'RaidRelay: Abyss Points guide', url: R + 'aion-2-abyss-points-guide' }], videos: [] },
-    { id: 'season-missions', title: 'Season Missions (weekly)', category: 'Events', resetType: 'weekly', scope: 'character', verified: false,
+    { id: 'season-missions', mode: 'both', title: 'Season Missions (weekly)', category: 'Events', resetType: 'weekly', scope: 'character', verified: false,
       description: '30 weekly missions worth up to 49,140 Oath Coins (27,580 without player kills; spend them in the Season Shop), up to 94,230 Abyss Points, and a weekly reward ladder (Enhance Stones, Resurrection Spiritstone, Odyle Energy, Content Usage Ticket chest). Collect Oath Coins before the weekly reset or they are lost. Season 1 runs 30 Sep to 16 Dec; unspent coins are deleted when the shop closes.',
       location: 'Season Missions menu', guideUrl: R + 'aion-2-season-missions-guide', source: 'R (single source)',
       steps: [

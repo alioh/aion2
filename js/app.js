@@ -110,9 +110,10 @@
 
   function visibleTasks(manage) {
     const q = $('search').value.trim().toLowerCase();
-    const { category, status, hideCompleted } = state.ui;
+    const { category, status, hideCompleted, mode } = state.ui;
     return state.tasks.filter((t) => {
       if (t.hidden && !manage) return false;
+      if (mode !== 'all' && t.mode !== mode && t.mode !== 'both') return false;
       if (category !== 'all' && t.category !== category) return false;
       if (!matches(t, q)) return false;
       const done = isDone(t);
@@ -139,6 +140,7 @@
       ...cats.map((c) => h('option', { value: c }, c)));
     $('fCategory').value = state.ui.category;
     $('fStatus').value = state.ui.status;
+    $('fMode').value = state.ui.mode;
     $('fHide').checked = state.ui.hideCompleted;
     $('catList').replaceChildren(...cats.map((c) => h('option', { value: c })));
   }
@@ -178,7 +180,8 @@
 
     const badges = h('div', { class: 'badges' },
       h('span', { class: 'badge cat' }, task.category),
-      !task.verified && h('span', { class: 'badge warn', title: task.source ? 'Source note: ' + task.source : 'Not confirmed against a source' }, 'unverified'),
+      h('span', { class: 'badge mode ' + task.mode, title: task.mode === 'pvp' ? 'Player-versus-player content' : task.mode === 'both' ? 'Mixes PvE and PvP' : 'Player-versus-environment content' },
+        task.mode === 'pvp' ? 'PvP' : task.mode === 'both' ? 'PvE + PvP' : 'PvE'),
       task.scope === 'server' && h('span', { class: 'badge', title: 'This limit is shared by all your characters on the server' }, 'shared'),
       task.resetType === 'once' && h('span', { class: 'badge' }, 'one-time'),
       task.hidden && h('span', { class: 'badge' }, 'hidden'));
@@ -410,6 +413,7 @@
     f.elements.videos.value = S.linksToText(t.videos);
     f.elements.steps.value = (t.steps || []).join('\n');
     f.elements.scope.value = t.scope || 'character';
+    f.elements.mode.value = t.mode || 'pve';
     f.elements.mapLayer.value = t.mapLayer || '';
     f.elements.verified.checked = !!t.verified;
     $('taskDlg').showModal();
@@ -423,7 +427,7 @@
     const data = {
       title: f.title.value, description: f.description.value, location: f.location.value, guideUrl: url,
       category: f.category.value, resetType: f.resetType.value, source: f.source.value, verified: f.verified.checked, links: S.parseLinks(f.links.value),
-      videos: S.parseLinks(f.videos.value), steps: f.steps.value.split(/\r?\n/), scope: f.scope.value, mapLayer: f.mapLayer.value,
+      videos: S.parseLinks(f.videos.value), steps: f.steps.value.split(/\r?\n/), scope: f.scope.value, mode: f.mode.value, mapLayer: f.mapLayer.value,
     };
     if (editing) Object.assign(editing, S.cleanTask({ ...editing, ...data }));
     else state.tasks.push(S.cleanTask({ ...data, id: S.uid('c'), custom: true }, true));
@@ -689,6 +693,7 @@
   $('search').addEventListener('input', renderList);
   $('manage').addEventListener('change', renderList);
   $('fCategory').addEventListener('change', (e) => { state.ui.category = e.target.value; save(); renderList(); });
+  $('fMode').addEventListener('change', (e) => { state.ui.mode = e.target.value; save(); renderList(); });
   $('fStatus').addEventListener('change', (e) => { state.ui.status = e.target.value; save(); renderList(); });
   $('fHide').addEventListener('change', (e) => { state.ui.hideCompleted = e.target.checked; save(); renderList(); });
   window.addEventListener('storage', (e) => { if (e.key === S.STORAGE_KEY) { state = load(); applyTheme(); render(); } });

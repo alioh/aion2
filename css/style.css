@@ -114,6 +114,10 @@ textarea { resize: vertical; }
   .tbody { padding-left: 12px; }
 }
 .task.is-hidden { border-style: dashed; opacity: .55; }
+.badge.mode { border: 1px solid transparent; font-weight: 700; }
+.badge.mode.pve { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.badge.mode.pvp { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
+.badge.mode.both { color: var(--accent2); border-color: color-mix(in srgb, var(--accent2) 45%, transparent); }
 .grip { flex: none; width: 18px; padding: 4px 0; background: none; border: 0; color: var(--muted); font-size: .9rem; line-height: 1; letter-spacing: -2px; cursor: grab; touch-action: none; user-select: none; opacity: .7; }
 .grip:hover, .grip:focus-visible { color: var(--accent); opacity: 1; }
 .task.dragging { opacity: .45; }
