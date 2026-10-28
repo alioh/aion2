@@ -149,8 +149,9 @@
     const ticks = [];
     for (let l = Math.ceil(localNow / (step * H)) * step * H; l - off < end; l += step * H) {
       const t = l - off;
-      if (l % (24 * H) === 0) continue;   // midnight is labelled by the "Tomorrow" guide
-      if (pct(t) > 4 && pct(t) < 97) ticks.push(h('span', { class: 'tl-tick', style: 'left:' + pct(t) + '%' }, hm(t)));
+      const toMidnight = Math.min(l % (24 * H), 24 * H - (l % (24 * H))) / span * 100;   // keep clear of the "Tomorrow" label
+      if (toMidnight < 7) continue;
+      if (pct(t) > 8 && pct(t) < 97) ticks.push(h('span', { class: 'tl-tick', style: 'left:' + pct(t) + '%' }, hm(t)));
     }
     axisEl.replaceChildren(h('span', { class: 'tl-tick now', style: 'left:0%' }, 'NOW'), ...ticks);
 
