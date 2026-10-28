@@ -25,6 +25,22 @@ Put your own image for a task in this folder and it shows next to the task title
 | `monolith.png` | Monolith: Empyrean Traces |
 | `crafting-start.png` | Crafting: start and level up |
 | `gathering-start.png` | Gathering (Essence Extraction) |
+| `hidden-cube-keys.png` | Hidden Cube keys (Quna shop) |
+| `emergency-supply.png` | Emergency Supply Requests |
+| `attendance-mail.png` | Attendance and mail rewards |
+| `abyss-commands.png` | Abyss Commands (Latesran Root) |
+| `weekly-supply.png` | Weekly Supply Requests |
+| `arena-battlefield.png` | Arena and Battlefield weekly goals |
+| `season-missions.png` | Season Missions (weekly) |
+| `wind-breeze-odyle.png` | Odyle Energy from Wind Breeze Merchants |
+| `soul-crystals-merchant.png` | Soul Crystals (Wind Breeze Merchants) |
+| `abyss-trade-shop.png` | Abyss Trade Shop weekly limits |
+| `halloween-event.png` | Halloween event |
+| `subjugation.png` | Subjugation tickets |
+| `nightmare-shop.png` | Nightmare Trade Shop: Soul Codex |
+| `shugo-shop.png` | Shugo shop: Stigma Shards and Daevanion Crystals |
+| `fire-temple.png` | Fire Temple weapon route |
+| `twitch-drops.png` | Twitch Drops: War for Atreia, Series 3 |
 
 **Tasks you add yourself:** name the file after the title in lowercase with dashes, for example `my-task.png` for a task called "My task".
 

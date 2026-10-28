@@ -102,7 +102,7 @@
     return {
       version: VERSION,
       // 07:00 UTC is the confirmed global reset.
-      settings: { resetTime: '07:00', timezone: 'UTC', serverTz: 'Europe/Berlin', weeklyDay: 3, theme: 'dark', resetConfirmed: true, resetUtc: true },
+      settings: { resetTime: '07:00', timezone: 'UTC', serverTz: 'Europe/Berlin', serverRegion: 'europe', serverName: '', weeklyDay: 3, theme: 'dark', resetConfirmed: true, resetUtc: true },
       characters: [c],
       activeCharId: c.id,
       tasks: seedTasks(seed),
@@ -131,6 +131,12 @@
     try { new Intl.DateTimeFormat('en', { timeZone: settings.timezone }); } catch (e) { settings.timezone = 'UTC'; }
     try { new Intl.DateTimeFormat('en', { timeZone: settings.serverTz }); } catch (e) { settings.serverTz = d.settings.serverTz; }
     if (settings.serverTz === 'UTC' || settings.serverTz === 'Europe/Paris') settings.serverTz = d.settings.serverTz;
+    // The server region decides the event clock; the picked server name is only a label (validated in the app).
+    const regionTz = { europe: 'Europe/Berlin', 'na-east': 'America/New_York', 'na-west': 'America/Los_Angeles', latam: 'America/Sao_Paulo', asia: 'Asia/Seoul' };
+    const byTz = Object.keys(regionTz).find((k) => regionTz[k] === settings.serverTz);
+    settings.serverRegion = regionTz[rs.serverRegion] ? rs.serverRegion : (byTz || 'europe');
+    settings.serverTz = regionTz[settings.serverRegion];
+    settings.serverName = str(rs.serverName, 40) || '';
     // Upgrade the old unconfirmed placeholder (05:00 UTC) to the confirmed 07:00 UTC reset.
     if (!rs.resetConfirmed && settings.resetTime.padStart(5, '0') === '05:00' && settings.timezone === 'UTC') {
       Object.assign(settings, d.settings, { theme: settings.theme, weeklyDay: settings.weeklyDay });

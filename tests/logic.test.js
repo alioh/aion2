@@ -5,6 +5,7 @@ const T = require('../js/time.js');
 const S = require('../js/store.js');
 const SEED = require('../js/seed.js');
 const MAPS = require('../js/maps.js');
+const SERVERS = require('../js/servers.js');
 
 const utc = (s) => Date.parse(s);
 const base = { resetTime: '07:00', timezone: 'UTC', weeklyDay: 3 }; // Wednesday
@@ -187,4 +188,31 @@ test('map urls: faction-aware, missing layers return null, seed map layers exist
 test('every map layer has an icon drawn from our own shapes', () => {
   for (const l of MAPS.LAYERS) assert.match(MAPS.iconSvg(l.id), /^<svg viewBox="0 0 24 24"/, l.id);
   assert.equal(MAPS.iconSvg('nope'), '');
+});
+
+test('servers: region lists match the status page counts and each server has one faction', () => {
+  const counts = { europe: 46, 'na-east': 18, 'na-west': 10, latam: 12, asia: 20 };
+  for (const r of SERVERS.REGIONS) {
+    assert.strictEqual(r.elyos.length + r.asmodian.length, counts[r.id], r.id);
+    assert.strictEqual(new Set([...r.elyos, ...r.asmodian]).size, counts[r.id], r.id + ' has a name in both factions');
+    assert.doesNotThrow(() => new Intl.DateTimeFormat('en', { timeZone: r.tz }));
+  }
+  assert.strictEqual(SERVERS.factionOf('europe', 'Ariel'), 'Elyos');
+  assert.strictEqual(SERVERS.factionOf('europe', 'Zikel'), 'Asmodian');
+  assert.strictEqual(SERVERS.factionOf('europe', 'Nope'), '');
+});
+
+test('settings: the server region decides the event clock; old saves are mapped', () => {
+  const load = (settings) => {
+    const raw = JSON.parse(JSON.stringify(S.defaultState(SEED, SEED.RESOURCES)));
+    Object.assign(raw.settings, settings);
+    delete raw.settings.serverRegion;
+    if (settings.serverRegion) raw.settings.serverRegion = settings.serverRegion;
+    return S.normalize(raw, SEED, SEED.RESOURCES).settings;
+  };
+  assert.strictEqual(load({ serverTz: 'America/Los_Angeles' }).serverRegion, 'na-west');
+  const b = load({ serverRegion: 'asia', serverTz: 'Europe/Berlin', serverName: 'Ariel' });
+  assert.strictEqual(b.serverTz, 'Asia/Seoul');
+  assert.strictEqual(b.serverName, 'Ariel');
+  assert.strictEqual(load({ serverTz: 'UTC' }).serverRegion, 'europe');
 });

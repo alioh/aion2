@@ -332,7 +332,8 @@
     // The game's reset schedule stays in UTC; the server time zone only changes how the server clock reads.
     const tz = state.settings.serverTz;
     $('serverTime').textContent = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(n);
-    $('serverLbl').textContent = tz.split('/').pop().replace('_', ' ');
+    const sname = state.settings.serverName;
+    $('serverLbl').textContent = (sname ? sname + ' \u00B7 ' : '') + tz.split('/').pop().replace('_', ' ');
     if (window.AionTimeline) window.AionTimeline.configure({ tz, resetTime: state.settings.resetTime, weeklyDay: state.settings.weeklyDay });
     $('dailyCd').textContent = T.formatCountdown(T.nextReset('daily', n, cfg()) - n);
     $('weeklyCd').textContent = T.formatCountdown(T.nextReset('weekly', n, cfg()) - n);
@@ -492,6 +493,35 @@
     return [...new Set(['UTC', 'Asia/Riyadh', 'Europe/Paris', 'Asia/Seoul', local, ...list, state.settings.timezone])];
   }
 
+  // ---------- my server ----------
+  const SV = window.AionServers;
+  function fillServerPickers() {
+    const s = state.settings;
+    $('sRegion').replaceChildren(...SV.REGIONS.map((r) => h('option', { value: r.id }, r.label)));
+    $('sRegion').value = s.serverRegion;
+    fillServerList(s.serverName);
+  }
+  function fillServerList(selected) {
+    const r = SV.byId($('sRegion').value);
+    const group = (label, names) => h('optgroup', { label }, ...names.map((n) => h('option', { value: n }, n)));
+    $('sServer').replaceChildren(h('option', { value: '' }, 'Not set'), group('Elyos', r.elyos), group('Asmodian', r.asmodian));
+    $('sServer').value = r.elyos.includes(selected) || r.asmodian.includes(selected) ? selected : '';
+    serverNote();
+  }
+  function serverNote() {
+    const r = SV.byId($('sRegion').value), name = $('sServer').value, f = SV.factionOf(r.id, name);
+    $('sServerNote').replaceChildren(
+      'Event times follow ' + r.tz.split('/').pop().replace('_', ' ') + ' time' + (name ? ' (' + name + ', ' + f + ')' : '') + '. ',
+      h('a', { href: SV.STATUS_URL, target: '_blank', rel: 'noopener' }, 'Check live server status \u2197'),
+      ' (aion2helper.com; its data cannot be loaded into this page).');
+  }
+  function readServerPickers() {
+    const s = state.settings, r = SV.byId($('sRegion').value);
+    s.serverRegion = r.id; s.serverTz = r.tz; s.serverName = $('sServer').value;
+  }
+  $('sRegion').addEventListener('change', () => { fillServerList(''); applySettings(); });
+  $('sServer').addEventListener('change', () => { serverNote(); applySettings(); });
+
   function openSettings() {
     const s = state.settings;
     $('sTime').value = s.resetTime.padStart(5, '0');
@@ -500,7 +530,7 @@
     const local = Intl.DateTimeFormat().resolvedOptions().timeZone;
     $('sTz').replaceChildren(...timezones().map((z) => h('option', { value: z }, z === local ? z + ' (this device)' : z)));
     $('sTz').value = s.timezone;
-    $('sServerTz').value = s.serverTz;
+    fillServerPickers();
     $('sResetEdit').hidden = true;      // the reset moment stays locked until the button is pressed
     $('sUnlock').hidden = false;
     $('sResetInfo').textContent = resetSummary();
@@ -512,12 +542,12 @@
     if ($('sTime').value) s.resetTime = $('sTime').value;
     s.weeklyDay = +$('sDay').value;
     s.timezone = $('sTz').value;
-    s.serverTz = $('sServerTz').value;
+    readServerPickers();
     s.resetConfirmed = true;
     save(); render();
     $('sResetInfo').textContent = resetSummary();
   }
-  for (const id of ['sTime', 'sDay', 'sTz', 'sServerTz']) $(id).addEventListener('change', applySettings);
+  for (const id of ['sTime', 'sDay', 'sTz']) $(id).addEventListener('change', applySettings);
   $('sUnlock').addEventListener('click', () => { $('sResetEdit').hidden = false; $('sUnlock').hidden = true; });
   $('sRestoreReset').addEventListener('click', () => {
     $('sTime').value = '07:00'; $('sDay').value = 3; applySettings();
