@@ -18,7 +18,7 @@
   const PATCH = 'https://aion2.plaync.com/en-us/board/update/view?articleId=6ae19668577e8c01355e0210';
   const yt = (id, label) => ({ label, url: 'https://www.youtube.com/watch?v=' + id });
 
-  const SEED_REV = 8;
+  const SEED_REV = 9;
 
   const SEED_TASKS = [
     // ---- Daily ----
@@ -284,6 +284,8 @@
     { label: 'MistaWigglez: Connect your Twitch account to claim Twitch Drops (YouTube)', url: 'https://www.youtube.com/watch?v=nBqmp2NCUwU' },
     { label: 'MistaWigglez: How to redeem coupon codes (YouTube)', url: 'https://www.youtube.com/watch?v=sH92X_NVJ-g' },
     { label: 'AION 2 Helper: Server status (every Global server)', url: 'https://aion2helper.com/status/' },
+    { label: 'QuestLog: Server status and population', url: 'https://questlog.gg/aion-2/en/server-status' },
+    { label: 'Gaming Tools: Server status', url: 'https://aion2.gaming.tools/server-status' },
     { label: 'AION 2 Helper: Home (guides and tools)', url: AH + '' },
     { label: 'AION 2 Helper: Daily and weekly planner', url: AH + 'armory/planner' },
     { label: 'AION 2 Helper: Timers (live event countdowns)', url: AH + 'timers/' },

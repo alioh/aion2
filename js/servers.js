@@ -25,7 +25,14 @@
       asmodian: ['Azphel', 'Beritra', 'Ereshkigal', 'Hadala', 'Israphel', 'Lumiel', 'Marchutan', 'Nemon', 'Triniel', 'Zikel'] },
   ];
 
-  const STATUS_URL = 'https://aion2helper.com/status/';
+  // Pages that show live status for every Global server. None of their data feeds can be read from another site
+  // (aion2helper allows only its own pages, QuestLog sends no CORS header, gaming.tools sits behind a bot check), so these are links.
+  const STATUS_SITES = [
+    { id: 'aion2helper', label: 'AION 2 Helper', url: 'https://aion2helper.com/status/' },
+    { id: 'questlog', label: 'QuestLog', url: 'https://questlog.gg/aion-2/en/server-status' },
+    { id: 'gamingtools', label: 'Gaming Tools', url: 'https://aion2.gaming.tools/server-status' },
+  ];
+  const statusSite = (id) => STATUS_SITES.find((x) => x.id === id) || STATUS_SITES[0];
   const byId = (id) => REGIONS.find((r) => r.id === id);
   const byTz = (tz) => REGIONS.find((r) => r.tz === tz);
   /** 'Elyos' or 'Asmodian' for a server name in a region, or '' when unknown. */
@@ -35,7 +42,7 @@
     return r.elyos.includes(name) ? 'Elyos' : r.asmodian.includes(name) ? 'Asmodian' : '';
   }
 
-  const api = { REGIONS, STATUS_URL, byId, byTz, factionOf };
+  const api = { REGIONS, STATUS_SITES, statusSite, byId, byTz, factionOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.AionServers = api;
 })(typeof window !== 'undefined' ? window : globalThis);

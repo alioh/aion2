@@ -102,7 +102,7 @@
     return {
       version: VERSION,
       // 07:00 UTC is the confirmed global reset.
-      settings: { resetTime: '07:00', timezone: 'UTC', serverTz: 'Europe/Berlin', serverRegion: 'europe', serverName: '', weeklyDay: 3, theme: 'dark', resetConfirmed: true, resetUtc: true },
+      settings: { resetTime: '07:00', timezone: 'UTC', serverTz: 'Europe/Berlin', serverRegion: 'europe', serverName: '', statusSite: 'aion2helper', weeklyDay: 3, theme: 'dark', resetConfirmed: true, resetUtc: true },
       characters: [c],
       activeCharId: c.id,
       tasks: seedTasks(seed),
@@ -137,6 +137,7 @@
     settings.serverRegion = regionTz[rs.serverRegion] ? rs.serverRegion : (byTz || 'europe');
     settings.serverTz = regionTz[settings.serverRegion];
     settings.serverName = str(rs.serverName, 40) || '';
+    settings.statusSite = ['aion2helper', 'questlog', 'gamingtools'].includes(rs.statusSite) ? rs.statusSite : 'aion2helper';
     // Upgrade the old unconfirmed placeholder (05:00 UTC) to the confirmed 07:00 UTC reset.
     if (!rs.resetConfirmed && settings.resetTime.padStart(5, '0') === '05:00' && settings.timezone === 'UTC') {
       Object.assign(settings, d.settings, { theme: settings.theme, weeklyDay: settings.weeklyDay });
